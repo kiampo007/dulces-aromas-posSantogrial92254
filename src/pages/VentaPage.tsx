@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useProducts } from '@/hooks/useProducts';
+import { useSales } from '@/hooks/useSales';
 
 /* ─── Types ─── */
 interface Product {
@@ -177,12 +179,7 @@ function SuccessCheckmark() {
 /* ─── Main Page Component ─── */
 export default function VentaPage() {
   /* -- State -- */
-  const [products] = useState<Product[]>(() => {
-    const stored = localStorage.getItem('products');
-    if (stored) return JSON.parse(stored);
-    localStorage.setItem('products', JSON.stringify(MOCK_PRODUCTS));
-    return MOCK_PRODUCTS;
-  });
+  const { products, adjustStock } = useProducts();
 
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem('current_cart');
@@ -321,13 +318,18 @@ export default function VentaPage() {
     setShowConfirm(true);
   }, [cart, paymentMethod, clientName]);
 
+  const { addSale } = useSales();
+
   const confirmSale = useCallback(() => {
     setIsProcessing(true);
     setTimeout(() => {
-      const receiptNumber = nextReceiptNumber();
-      const sale: Sale = {
-        id: receiptNumber,
-        items: [...cart],
+      const sale = {
+        items: cart.map(item => ({
+          productId: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        })),
         subtotal,
         discount,
         total,
@@ -335,17 +337,14 @@ export default function VentaPage() {
         clientName: clientName || undefined,
         clientPhone: clientPhone || undefined,
         dueDate: dueDate || undefined,
-        createdAt: new Date().toISOString(),
       };
 
-      /* Save sale */
-      const sales = JSON.parse(localStorage.getItem('sales') || '[]');
-      sales.push(sale);
-      localStorage.setItem('sales', JSON.stringify(sales));
+      /* Save sale via hook */
+      const savedSale = addSale(sale);
 
       /* If credit, create debt */
       if (paymentMethod === 'credito' && clientName) {
-        const debts = JSON.parse(localStorage.getItem('debts') || '[]');
+        const debts = JSON.parse(localStorage.getItem('dulces_aromas_debts') || '[]');
         debts.push({
           id: crypto.randomUUID(),
           clientName: clientName.trim(),
@@ -354,21 +353,18 @@ export default function VentaPage() {
           paidAmount: 0,
           remaining: total,
           status: 'activa',
-          saleId: receiptNumber,
-          createdAt: sale.createdAt,
+          saleId: savedSale.id,
+          createdAt: savedSale.createdAt,
           dueDate: dueDate || new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
           payments: [],
         });
-        localStorage.setItem('debts', JSON.stringify(debts));
+        localStorage.setItem('dulces_aromas_debts', JSON.stringify(debts));
       }
 
-      /* Update stock */
-      const storedProducts = JSON.parse(localStorage.getItem('products') || '[]');
+      /* Update stock via hook */
       cart.forEach((item) => {
-        const p = storedProducts.find((pr: Product) => pr.id === item.id);
-        if (p) p.stock = Math.max(0, p.stock - item.quantity);
+        adjustStock(item.id, -item.quantity);
       });
-      localStorage.setItem('products', JSON.stringify(storedProducts));
 
       setIsProcessing(false);
       setShowConfirm(false);
@@ -378,7 +374,7 @@ export default function VentaPage() {
       setDiscount(0);
       setTimeout(() => setShowConfetti(false), 3000);
     }, 800);
-  }, [cart, subtotal, discount, total, paymentMethod, clientName, clientPhone, dueDate]);
+  }, [cart, subtotal, discount, total, paymentMethod, clientName, clientPhone, dueDate, addSale, adjustStock]);
 
   /* -- Receipt data -- */
   const [receiptNumber, setReceiptNumber] = useState('');

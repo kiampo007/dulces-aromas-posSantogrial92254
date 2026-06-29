@@ -40,10 +40,10 @@ function hashPin(pin: string): string {
 }
 
 /* ─── Generic Load Functions ─── */
-function loadProducts(): Producto[] { try { return JSON.parse(localStorage.getItem('dulces-aromas-products') || '[]'); } catch { return []; } }
-function loadSales(): Venta[] { try { return JSON.parse(localStorage.getItem('dulces-aromas-sales') || '[]'); } catch { return []; } }
-function loadClients(): Cliente[] { try { return JSON.parse(localStorage.getItem('dulces-aromas-clients') || '[]'); } catch { return []; } }
-function loadDebts(): Deuda[] { try { return JSON.parse(localStorage.getItem('dulces-aromas-debts') || '[]'); } catch { return []; } }
+function loadProducts(): Producto[] { try { return JSON.parse(localStorage.getItem('dulces_aromas_products') || '[]'); } catch { return []; } }
+function loadSales(): Venta[] { try { return JSON.parse(localStorage.getItem('dulces_aromas_sales') || '[]'); } catch { return []; } }
+function loadClients(): Cliente[] { try { return JSON.parse(localStorage.getItem('dulces_aromas_clients') || '[]'); } catch { return []; } }
+function loadDebts(): Deuda[] { try { return JSON.parse(localStorage.getItem('dulces_aromas_debts') || '[]'); } catch { return []; } }
 
 /* ─── Settings Key Helpers ─── */
 const S = (k: string) => `dulces-aromas-${k}`;
@@ -246,8 +246,8 @@ function SeguridadSection() {
 
             {/* Session */}
             <button onClick={() => {
-              localStorage.removeItem('dulces-aromas-pin-attempts');
-              localStorage.removeItem('dulces-aromas-pin-lockout');
+              localStorage.removeItem('dulces_aromas_pin-attempts');
+              localStorage.removeItem('dulces_aromas_pin-lockout');
               alert('Sesion actual reiniciada');
             }}
               className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors text-left">
@@ -279,7 +279,7 @@ function PinChangeModal({ open, onClose }: { open: boolean; onClose: () => void 
 
   const handleSave = () => {
     setError('');
-    const storedHash = localStorage.getItem('dulces-aromas-pin-hash') ?? '';
+    const storedHash = localStorage.getItem('dulces_aromas_pin-hash') ?? '';
     const defaultHash = hashPin('2525');
 
     if (hashPin(currentPin) !== storedHash && hashPin(currentPin) !== defaultHash) {
@@ -295,7 +295,7 @@ function PinChangeModal({ open, onClose }: { open: boolean; onClose: () => void 
       return;
     }
 
-    localStorage.setItem('dulces-aromas-pin-hash', hashPin(newPin));
+    localStorage.setItem('dulces_aromas_pin-hash', hashPin(newPin));
     setSuccess(true);
     setTimeout(() => {
       setSuccess(false);
@@ -399,7 +399,7 @@ function DatosSection() {
       clients: loadClients(),
       debts: loadDebts(),
       settings: Object.fromEntries(
-        Object.entries(localStorage).filter(([k]) => k.startsWith('dulces-aromas-'))
+        Object.entries(localStorage).filter(([k]) => k.startsWith('dulces_aromas_'))
       ),
       exportDate: new Date().toISOString(),
       version: '2.0',
@@ -445,7 +445,7 @@ function DatosSection() {
       'Saldo Deudas': debts.reduce((s, d) => s + d.saldo, 0),
     }]);
     XLSX.utils.book_append_sheet(wb, ws4, 'Resumen');
-    XLSX.writeFile(wb, 'dulces-aromas-export.xlsx');
+    XLSX.writeFile(wb, 'dulces_aromas_export.xlsx');
   };
 
   const handleRestoreFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -473,10 +473,10 @@ function DatosSection() {
 
   const confirmRestore = () => {
     if (!restoreFile) return;
-    if (Array.isArray(restoreFile.products)) localStorage.setItem('dulces-aromas-products', JSON.stringify(restoreFile.products));
-    if (Array.isArray(restoreFile.sales)) localStorage.setItem('dulces-aromas-sales', JSON.stringify(restoreFile.sales));
-    if (Array.isArray(restoreFile.clients)) localStorage.setItem('dulces-aromas-clients', JSON.stringify(restoreFile.clients));
-    if (Array.isArray(restoreFile.debts)) localStorage.setItem('dulces-aromas-debts', JSON.stringify(restoreFile.debts));
+    if (Array.isArray(restoreFile.products)) localStorage.setItem('dulces_aromas_products', JSON.stringify(restoreFile.products));
+    if (Array.isArray(restoreFile.sales)) localStorage.setItem('dulces_aromas_sales', JSON.stringify(restoreFile.sales));
+    if (Array.isArray(restoreFile.clients)) localStorage.setItem('dulces_aromas_clients', JSON.stringify(restoreFile.clients));
+    if (Array.isArray(restoreFile.debts)) localStorage.setItem('dulces_aromas_debts', JSON.stringify(restoreFile.debts));
     setShowRestoreConfirm(false);
     setRestorePreview(null);
     setRestoreFile(null);
@@ -485,10 +485,10 @@ function DatosSection() {
 
   const resetAllData = () => {
     if (resetInput !== 'ELIMINAR') return;
-    localStorage.removeItem('dulces-aromas-products');
-    localStorage.removeItem('dulces-aromas-sales');
-    localStorage.removeItem('dulces-aromas-clients');
-    localStorage.removeItem('dulces-aromas-debts');
+    localStorage.removeItem('dulces_aromas_products');
+    localStorage.removeItem('dulces_aromas_sales');
+    localStorage.removeItem('dulces_aromas_clients');
+    localStorage.removeItem('dulces_aromas_debts');
     setShowResetConfirm(false);
     setResetInput('');
     alert('Todos los datos han sido eliminados. Recarga la pagina.');
@@ -547,8 +547,8 @@ function DatosSection() {
       }
     }
 
-    localStorage.setItem('dulces-aromas-products', JSON.stringify(demoProducts));
-    localStorage.setItem('dulces-aromas-sales', JSON.stringify(demoSales));
+    localStorage.setItem('dulces_aromas_products', JSON.stringify(demoProducts));
+    localStorage.setItem('dulces_aromas_sales', JSON.stringify(demoSales));
     alert('Datos de demostracion cargados. Recarga la pagina para ver los cambios.');
   };
 

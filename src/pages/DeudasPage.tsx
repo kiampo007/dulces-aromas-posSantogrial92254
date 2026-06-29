@@ -155,12 +155,12 @@ type FilterTab = (typeof FILTER_TABS)[number];
 /* ─── Main Page ─── */
 export default function DeudasPage() {
   const [debts, setDebts] = useState<Debt[]>(() => {
-    const stored = localStorage.getItem('debts');
+    const stored = localStorage.getItem('dulces_aromas_debts');
     if (stored) {
       const parsed = JSON.parse(stored);
       if (parsed.length > 0) return parsed;
     }
-    localStorage.setItem('debts', JSON.stringify(MOCK_DEBTS));
+    localStorage.setItem('dulces_aromas_debts', JSON.stringify(MOCK_DEBTS));
     return MOCK_DEBTS;
   });
 
@@ -174,7 +174,7 @@ export default function DeudasPage() {
 
   /* Persist */
   useEffect(() => {
-    localStorage.setItem('debts', JSON.stringify(debts));
+    localStorage.setItem('dulces_aromas_debts', JSON.stringify(debts));
   }, [debts]);
 
   /* Sync selected debt if data changes */
