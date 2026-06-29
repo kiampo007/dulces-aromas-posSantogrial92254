@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="tealGrad5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F4C4B"/>
+      <stop offset="100%" style="stop-color:#14919B"/>
+    </linearGradient>
+    <linearGradient id="goldGrad6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C8973E"/>
+      <stop offset="100%" style="stop-color:#E8C56C"/>
+    </linearGradient>
+  </defs>
+  <!-- Globe circle -->
+  <circle cx="24" cy="26" r="16" fill="none" stroke="url(#tealGrad5)" stroke-width="2" opacity="0.7"/>
+  <!-- Globe horizontal lines -->
+  <ellipse cx="24" cy="26" rx="8" ry="16" fill="none" stroke="url(#tealGrad5)" stroke-width="1" opacity="0.4"/>
+  <line x1="8" y1="26" x2="40" y2="26" stroke="url(#tealGrad5)" stroke-width="1" opacity="0.4"/>
+  <ellipse cx="24" cy="26" rx="14" ry="6" fill="none" stroke="url(#tealGrad5)" stroke-width="1" opacity="0.3"/>
+  <!-- Trend line -->
+  <polyline points="12,34 18,28 24,30 32,20" fill="none" stroke="url(#goldGrad6)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Arrow head -->
+  <polygon points="32,20 30,24 34,24" fill="url(#goldGrad6)"/>
+  <!-- Sparkles -->
+  <path d="M36 8 L37 11 L40 12 L37 13 L36 16 L35 13 L32 12 L35 11 Z" fill="url(#goldGrad6)" opacity="0.8"/>
+  <path d="M10 10 L11 12 L13 13 L11 14 L10 16 L9 14 L7 13 L9 12 Z" fill="url(#tealGrad5)" opacity="0.6"/>
+</svg>

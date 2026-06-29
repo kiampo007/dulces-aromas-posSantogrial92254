@@ -1,0 +1,17 @@
+{
+  "name": "Dulces Aromas POS",
+  "short_name": "Dulces Aromas",
+  "description": "Sistema de punto de venta para Dulces Aromas Perfumería",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f0f9ff",
+  "theme_color": "#00BCD4",
+  "icons": [
+    {
+      "src": "/logo-dulces-aromas.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
