@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 
 export interface StockItem {
   id: string;
@@ -83,8 +83,11 @@ export interface DashboardData {
   };
 }
 
-const STORAGE_KEY = 'dulces-aromas-dashboard-data';
+const STORAGE_KEY = 'dulces_aromas_dashboard_data';
 const PEDIDOS_KEY = 'dulces_aromas_pedidos';
+const PRODUCTS_KEY = 'dulces_aromas_products';
+const SALES_KEY = 'dulces_aromas_sales';
+const DEBTS_KEY = 'dulces_aromas_debts';
 
 function countPedidosPendientes(): number {
   if (typeof window === 'undefined') return 0;
@@ -98,165 +101,173 @@ function countPedidosPendientes(): number {
   }
 }
 
-const initialStockAlerts: StockItem[] = [
-  { id: '1', name: 'AGUA BRAVA AZUL 100ml', price: 15000, stock: 1 },
-  { id: '2', name: 'SET AGUA BRAVA 50ml + DEO 150ml', price: 15000, stock: 1 },
-  { id: '3', name: 'SET QUORUM 50ml + DEO 150ml', price: 15000, stock: 1 },
-  { id: '4', name: 'BLUE HOMME EDP 100ml', price: 40000, stock: 2 },
-  { id: '5', name: 'CLUB DE NUIT SILLAGE EDP 105ml', price: 45000, stock: 2 },
-];
+function loadProducts(): any[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = localStorage.getItem(PRODUCTS_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch { /* ignore */ }
+  return [];
+}
 
-const initialTopProducts: ProductMargin[] = [
-  { id: '1', name: 'Club de Nuit Intense', margin: 65, gain: 28500, sales: 8 },
-  { id: '2', name: 'Armaf Tres Nuit', margin: 62, gain: 18600, sales: 6 },
-  { id: '3', name: 'Lattafa Fakhar Black', margin: 58, gain: 23200, sales: 5 },
-  { id: '4', name: 'Rasasi Hawas', margin: 55, gain: 22000, sales: 4 },
-  { id: '5', name: 'Al Haramain Amber Oud', margin: 52, gain: 26000, sales: 3 },
-];
+function loadSales(): any[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = localStorage.getItem(SALES_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch { /* ignore */ }
+  return [];
+}
 
-const initialLowProducts: ProductMargin[] = [
-  { id: '6', name: 'Antonio Banderas Blue', margin: 25, gain: 8750, sales: 12 },
-  { id: '7', name: 'Shakira Dance Midnight', margin: 22, gain: 6600, sales: 10 },
-  { id: '8', name: 'J Del Pozo Halloween', margin: 20, gain: 8000, sales: 8 },
-];
+function loadDebts(): any[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = localStorage.getItem(DEBTS_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch { /* ignore */ }
+  return [];
+}
 
-const initialAchievements: Achievement[] = [
-  { id: '1', name: 'Inventario', unlocked: true, icon: 'Package' },
-  { id: '2', name: 'Primera Venta', unlocked: false, icon: 'DollarSign' },
-  { id: '3', name: 'Vendedor', unlocked: false, icon: 'ShoppingBag' },
-  { id: '4', name: 'Experto', unlocked: false, icon: 'Award' },
-  { id: '5', name: 'Cobrador', unlocked: false, icon: 'HandCoins' },
-  { id: '6', name: 'Organizado', unlocked: false, icon: 'FolderCheck' },
-  { id: '7', name: 'Tendencia', unlocked: false, icon: 'TrendingUp' },
-  { id: '8', name: 'Social', unlocked: false, icon: 'Instagram' },
-  { id: '9', name: 'Meta', unlocked: false, icon: 'Target' },
-  { id: '10', name: 'Leyenda', unlocked: false, icon: 'Crown' },
-];
-
-const initialWeeklyStats: DayStat[] = [
-  { day: 'domingo', short: 'dom', amount: 0 },
-  { day: 'lunes', short: 'lun', amount: 0 },
-  { day: 'martes', short: 'mar', amount: 0 },
-  { day: 'miercoles', short: 'mie', amount: 0 },
-  { day: 'jueves', short: 'jue', amount: 0 },
-  { day: 'viernes', short: 'vie', amount: 0 },
-  { day: 'sabado', short: 'sab', amount: 0 },
-];
-
-const initialTrendsDama: TrendItem[] = [
-  { rank: 1, name: 'Libre Intense', brand: 'Yves Saint Laurent' },
-  { rank: 2, name: "J'adore", brand: 'Dior' },
-  { rank: 3, name: 'Chanel No.5', brand: 'Chanel' },
-  { rank: 4, name: 'La Vie Est Belle', brand: 'Lancome' },
-  { rank: 5, name: 'Good Girl Blush', brand: 'Carolina Herrera' },
-  { rank: 6, name: 'Bloom', brand: 'Gucci' },
-  { rank: 7, name: 'Paradoxe', brand: 'Prada' },
-  { rank: 8, name: 'Donna Born In Roma', brand: 'Valentino' },
-  { rank: 9, name: 'Black Opium', brand: 'Yves Saint Laurent' },
-  { rank: 10, name: 'Daisy Wild', brand: 'Marc Jacobs' },
-];
-
-const initialTrendsCaballero: TrendItem[] = [
-  { rank: 1, name: 'Sauvage Elixir', brand: 'Dior' },
-  { rank: 2, name: 'Bleu de Chanel', brand: 'Chanel' },
-  { rank: 3, name: 'Acqua di Gio', brand: 'Giorgio Armani' },
-  { rank: 4, name: 'Terre d\'Hermes', brand: 'Hermes' },
-  { rank: 5, name: 'Aventus', brand: 'Creed' },
-  { rank: 6, name: 'One Million', brand: 'Paco Rabanne' },
-  { rank: 7, name: 'Invictus', brand: 'Paco Rabanne' },
-  { rank: 8, name: 'Light Blue Intense', brand: 'Dolce & Gabbana' },
-  { rank: 9, name: 'Halloween Man X', brand: 'J. Del Pozo' },
-  { rank: 10, name: 'Scandal Pour Homme', brand: 'Jean Paul Gaultier' },
-];
-
-const initialTrendsUnisex: TrendItem[] = [
-  { rank: 1, name: 'Baccarat Rouge 540', brand: 'Maison Francis Kurkdjian' },
-  { rank: 2, name: 'Santal 33', brand: 'Le Labo' },
-  { rank: 3, name: 'Black Phantom', brand: 'Kilian' },
-  { rank: 4, name: 'Silver Mountain Water', brand: 'Creed' },
-  { rank: 5, name: 'Gypsy Water', brand: 'Byredo' },
-];
-
-function getDefaultData(): DashboardData {
+function calculateRealData(): DashboardData {
+  const products = loadProducts();
+  const sales = loadSales();
+  const debts = loadDebts();
+  
+  const today = new Date().toISOString().split('T')[0];
+  const todaySales = sales.filter((s: any) => s.createdAt?.startsWith(today));
+  const ventasHoy = todaySales.reduce((sum: number, s: any) => sum + (s.total || 0), 0);
+  
+  const totalStock = products.reduce((sum: number, p: any) => sum + (p.stock || 0), 0);
+  const totalDeudas = debts.reduce((sum: number, d: any) => sum + (d.remaining || 0), 0);
+  
+  // Calcular margen promedio real
+  const margins = products.filter((p: any) => p.margin > 0).map((p: any) => p.margin);
+  const avgMargin = margins.length > 0 
+    ? Math.round(margins.reduce((a: number, b: number) => a + b, 0) / margins.length)
+    : 0;
+  
+  // Stock alerts reales
+  const stockBajo = products
+    .filter((p: any) => p.stock > 0 && p.stock <= (p.minStock || 5))
+    .map((p: any) => ({ id: p.id, name: p.name }));
+  
+  const agotados = products
+    .filter((p: any) => p.stock === 0)
+    .map((p: any) => ({ id: p.id, name: p.name }));
+  
+  // Productos más vendidos (de ventas reales)
+  const productSales: Record<string, { name: string; total: number; qty: number }> = {};
+  sales.forEach((sale: any) => {
+    sale.items?.forEach((item: any) => {
+      if (!productSales[item.productId]) {
+        productSales[item.productId] = { name: item.name, total: 0, qty: 0 };
+      }
+      productSales[item.productId].total += (item.price * item.quantity);
+      productSales[item.productId].qty += item.quantity;
+    });
+  });
+  
+  const topProducts = Object.entries(productSales)
+    .sort((a: any, b: any) => b[1].total - a[1].total)
+    .slice(0, 5)
+    .map(([id, data]: [string, any]) => ({
+      id,
+      name: data.name,
+      margin: products.find((p: any) => p.id === id)?.margin || 0,
+      gain: data.total,
+      sales: data.qty,
+    }));
+  
+  // Weekly stats reales
+  const days = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+  const shorts = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
+  const weeklyStats = days.map((day, i) => ({
+    day,
+    short: shorts[i],
+    amount: sales
+      .filter((s: any) => new Date(s.createdAt).getDay() === i)
+      .reduce((sum: number, s: any) => sum + (s.total || 0), 0),
+  }));
+  
+  const now = new Date();
+  const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  
   return {
     kpi: {
-      ventasHoy: 0,
-      inventario: 175,
-      deudas: 0,
-      margen: 67,
-      pedidosPendientes: 0,
+      ventasHoy,
+      inventario: totalStock,
+      deudas: totalDeudas,
+      margen: avgMargin,
+      pedidosPendientes: countPedidosPendientes(),
     },
-    stockAlerts: initialStockAlerts,
-    reminders: {
-      stockBajo: [
-        { id: '1', name: 'AGUA BRAVA AZUL 100ml' },
-        { id: '2', name: 'SET AGUA BRAVA 50ml + DEO' },
-        { id: '3', name: 'SET QUORUM 50ml + DEO' },
-        { id: '4', name: 'BLUE HOMME EDP 100ml' },
-        { id: '5', name: 'CLUB DE NUIT SILLAGE EDP' },
-      ],
-      agotados: [
-        { id: '6', name: 'ACQUA DI GIO 100ml' },
-      ],
-    },
+    stockAlerts: stockBajo.map((s: any) => ({ ...s, price: products.find((p: any) => p.id === s.id)?.price || 0, stock: products.find((p: any) => p.id === s.id)?.stock || 0 })),
+    reminders: { stockBajo, agotados },
     monthlyGoal: {
-      current: 0,
+      current: ventasHoy,
       target: 1000000,
-      month: 'Junio',
-      year: 2026,
-      daysElapsed: 27,
-      totalDays: 30,
+      month: monthNames[now.getMonth()],
+      year: now.getFullYear(),
+      daysElapsed: now.getDate(),
+      totalDays: new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate(),
     },
     profitability: {
-      averageMargin: 40,
-      topProducts: initialTopProducts,
-      lowProducts: initialLowProducts,
+      averageMargin: avgMargin,
+      topProducts: topProducts.length > 0 ? topProducts : [],
+      lowProducts: [],
       categories: [
-        { name: 'Caballero', margin: 40 },
-        { name: 'Dama', margin: 40 },
-        { name: 'Ninos', margin: 40 },
+        { name: 'Caballero', margin: 0 },
+        { name: 'Dama', margin: 0 },
+        { name: 'Ninos', margin: 0 },
       ],
     },
-    achievements: initialAchievements,
-    weeklyStats: initialWeeklyStats,
+    achievements: [
+      { id: '1', name: 'Inventario', unlocked: products.length > 0, icon: 'Package' },
+      { id: '2', name: 'Primera Venta', unlocked: sales.length > 0, icon: 'DollarSign' },
+      { id: '3', name: 'Vendedor', unlocked: sales.length >= 10, icon: 'ShoppingBag' },
+      { id: '4', name: 'Experto', unlocked: sales.length >= 50, icon: 'Award' },
+      { id: '5', name: 'Cobrador', unlocked: debts.length > 0, icon: 'HandCoins' },
+      { id: '6', name: 'Organizado', unlocked: products.length >= 50, icon: 'FolderCheck' },
+      { id: '7', name: 'Tendencia', unlocked: sales.length >= 100, icon: 'TrendingUp' },
+      { id: '8', name: 'Social', unlocked: false, icon: 'Instagram' },
+      { id: '9', name: 'Meta', unlocked: ventasHoy >= 1000000, icon: 'Target' },
+      { id: '10', name: 'Leyenda', unlocked: sales.length >= 500, icon: 'Crown' },
+    ],
+    weeklyStats,
     boutiqueSummary: {
-      productos: 175,
-      ventas: 0,
-      clientes: 2,
-      encargos: 0,
+      productos: products.length,
+      ventas: sales.length,
+      clientes: new Set(sales.filter((s: any) => s.clientName).map((s: any) => s.clientName)).size,
+      encargos: countPedidosPendientes(),
     },
     trends: {
-      dama: initialTrendsDama,
-      caballero: initialTrendsCaballero,
-      unisex: initialTrendsUnisex,
+      dama: [],
+      caballero: [],
+      unisex: [],
     },
   };
 }
 
 function loadData(): DashboardData {
-  if (typeof window === 'undefined') return getDefaultData();
+  if (typeof window === 'undefined') return calculateRealData();
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored) {
     try {
       const parsed = JSON.parse(stored) as DashboardData;
-      // Migration: ensure pedidosPendientes exists
-      if (typeof parsed.kpi.pedidosPendientes !== 'number') {
-        parsed.kpi.pedidosPendientes = 0;
-      }
-      return parsed;
+      // Recalculate with real data on every load
+      const realData = calculateRealData();
+      return { ...parsed, ...realData };
     } catch {
-      return getDefaultData();
+      return calculateRealData();
     }
   }
-  const defaultData = getDefaultData();
+  const defaultData = calculateRealData();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
   return defaultData;
 }
 
 export function useDashboardData() {
-  const [data, setData] = useState<DashboardData>(() => {
+  const [data, setData] = useState(() => {
     const loaded = loadData();
-    // Sync pedidos count on load
     loaded.kpi.pedidosPendientes = countPedidosPendientes();
     return loaded;
   });
@@ -265,21 +276,8 @@ export function useDashboardData() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }, [data]);
 
-  /* Refresh pedidos count from localStorage */
-  const refreshPedidos = useCallback(() => {
-    setData(prev => ({
-      ...prev,
-      kpi: { ...prev.kpi, pedidosPendientes: countPedidosPendientes() },
-    }));
-  }, []);
-
-  const updateStock = useCallback((id: string, delta: number) => {
-    setData(prev => ({
-      ...prev,
-      stockAlerts: prev.stockAlerts.map(item =>
-        item.id === id ? { ...item, stock: Math.max(0, item.stock + delta) } : item
-      ),
-    }));
+  const refreshData = useCallback(() => {
+    setData(calculateRealData());
   }, []);
 
   const updateKPI = useCallback((key: keyof DashboardData['kpi'], value: number) => {
@@ -289,13 +287,13 @@ export function useDashboardData() {
     }));
   }, []);
 
-  return { data, updateStock, updateKPI, refreshPedidos };
+  return { data, updateKPI, refreshData };
 }
 
 export function formatCurrency(value: number): string {
-  return `$ ${value.toLocaleString('es-ES').replace(/,/g, '.')}`;
+  return $ ;
 }
 
 export function formatPercent(value: number): string {
-  return `${value}%`;
+  return ${value}%;
 }
