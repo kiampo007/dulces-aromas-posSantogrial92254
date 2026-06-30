@@ -155,7 +155,7 @@ function calculateRealData(): DashboardData {
     .filter((p: any) => p.stock === 0)
     .map((p: any) => ({ id: p.id, name: p.name }));
   
-  // Productos más vendidos (de ventas reales)
+  // Productos mï¿½s vendidos (de ventas reales)
   const productSales: Record<string, { name: string; total: number; qty: number }> = {};
   sales.forEach((sale: any) => {
     sale.items?.forEach((item: any) => {
