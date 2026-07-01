@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+﻿import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Palette, Moon, Shield, Lock, Timer, Database,
@@ -17,18 +17,18 @@ import { cn } from '@/lib/utils';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import * as XLSX from 'xlsx';
 
-/* ─── Types ─── */
+/* â”€â”€â”€ Types â”€â”€â”€ */
 interface Producto { id: string; nombre: string; categoria: string; precio: number; costo: number; stock: number; stockMinimo: number; }
 interface Venta { id: string; fecha: string; items: Array<{ productoId: string; nombre: string; cantidad: number; precioUnitario: number; subtotal: number }>; total: number; metodoPago: string; cliente?: string; }
 interface Cliente { id: string; nombre: string; telefono?: string; totalCompras: number; totalGastado: number; ultimaCompra: string; visitas: number; }
 interface Deuda { id: string; cliente: string; monto: number; pagado: number; saldo: number; fecha: string; }
 
-/* ─── Formatters ─── */
+/* â”€â”€â”€ Formatters â”€â”€â”€ */
 function fmtMoney(value: number): string {
   return `$ ${value.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
-/* ─── PIN Hash Function ─── */
+/* â”€â”€â”€ PIN Hash Function â”€â”€â”€ */
 function hashPin(pin: string): string {
   let hash = 0;
   for (let i = 0; i < pin.length; i++) {
@@ -39,22 +39,22 @@ function hashPin(pin: string): string {
   return hash.toString(16);
 }
 
-/* ─── Generic Load Functions ─── */
+/* â”€â”€â”€ Generic Load Functions â”€â”€â”€ */
 function loadProducts(): Producto[] { try { return JSON.parse(localStorage.getItem('dulces_aromas_products') || '[]'); } catch { return []; } }
 function loadSales(): Venta[] { try { return JSON.parse(localStorage.getItem('dulces_aromas_sales') || '[]'); } catch { return []; } }
 function loadClients(): Cliente[] { try { return JSON.parse(localStorage.getItem('dulces_aromas_clients') || '[]'); } catch { return []; } }
 function loadDebts(): Deuda[] { try { return JSON.parse(localStorage.getItem('dulces_aromas_debts') || '[]'); } catch { return []; } }
 
-/* ─── Settings Key Helpers ─── */
+/* â”€â”€â”€ Settings Key Helpers â”€â”€â”€ */
 const S = (k: string) => `dulces-aromas-${k}`;
 function getSetting<T>(key: string, defaultVal: T): T {
   try { const v = localStorage.getItem(S(key)); return v !== null ? JSON.parse(v) : defaultVal; } catch { return defaultVal; }
 }
 function setSetting<T>(key: string, val: T) { localStorage.setItem(S(key), JSON.stringify(val)); }
 
-/* ═══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    MAIN PAGE COMPONENT
-   ═══════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 export default function ConfiguracionPage() {
   const { isDark, toggle } = useDarkMode();
   const [accentColor, setAccentColor] = useState(() => getSetting('accent-color', 'gold'));
@@ -89,9 +89,9 @@ export default function ConfiguracionPage() {
   );
 }
 
-/* ═══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    1. APARIENCIA
-   ═══════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function AparienciaSection({
   isDark, toggleDark, accentColor, onAccentChange, compactMode, onCompactChange
 }: {
@@ -178,9 +178,9 @@ function AparienciaSection({
   );
 }
 
-/* ═══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    2. SEGURIDAD
-   ═══════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function SeguridadSection() {
   const [showPinModal, setShowPinModal] = useState(false);
   const [autoLock, setAutoLock] = useState(() => getSetting('auto-lock', true));
@@ -269,7 +269,7 @@ function SeguridadSection() {
   );
 }
 
-/* ─── PIN Change Modal ─── */
+/* â”€â”€â”€ PIN Change Modal â”€â”€â”€ */
 function PinChangeModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [currentPin, setCurrentPin] = useState('');
   const [newPin, setNewPin] = useState('');
@@ -382,9 +382,9 @@ function PinChangeModal({ open, onClose }: { open: boolean; onClose: () => void 
   );
 }
 
-/* ═══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    3. DATOS
-   ═══════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function DatosSection() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [resetInput, setResetInput] = useState('');
@@ -710,9 +710,9 @@ function DatosSection() {
   );
 }
 
-/* ═══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    4. IMPRESION
-   ═══════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function ImpresionSection() {
   const [storeName, setStoreName] = useState(() => getSetting('receipt-store-name', 'Dulces Aromas'));
   const [storeAddress, setStoreAddress] = useState(() => getSetting('receipt-address', ''));
@@ -778,7 +778,7 @@ function ImpresionSection() {
               <Switch checked={showQR} onCheckedChange={v => update('show-qr', v)} />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm">Tamaño de papel</span>
+              <span className="text-sm">TamaÃ±o de papel</span>
               <div className="flex gap-2">
                 <Button variant={paperSize === '58' ? 'default' : 'outline'} size="sm" className="text-xs"
                   onClick={() => update('paper-size', '58')}>58mm</Button>
@@ -834,11 +834,11 @@ function ImpresionSection() {
   );
 }
 
-/* ═══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    5. METAS
-   ═══════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function MetasSection() {
-  const [monthlyGoal, setMonthlyGoal] = useState(() => getSetting('sales-goal-monthly', 1000000));
+  const [monthlyGoal, setMonthlyGoal] = useState(() => getSetting('dulces_aromas_meta_mes', 1000000));
   const [lowStockAlert, setLowStockAlert] = useState(() => getSetting('low-stock-threshold', 5));
   const [notifyGoal, setNotifyGoal] = useState(() => getSetting('notify-goal', true));
 
@@ -857,7 +857,7 @@ function MetasSection() {
             <div className="flex items-center gap-2">
               <span className="text-lg font-medium">$</span>
               <Input type="number" value={monthlyGoal}
-                onChange={e => { const v = parseInt(e.target.value) || 0; setMonthlyGoal(v); setSetting('sales-goal-monthly', v); }}
+                onChange={e => { const v = parseInt(e.target.value) || 0; setMonthlyGoal(v); setSetting('dulces_aromas_meta_mes', v); }}
                 className="font-[JetBrains_Mono,monospace]" />
             </div>
             <p className="text-xs text-muted-foreground mt-1">Se reinicia cada mes automaticamente</p>
@@ -906,9 +906,9 @@ function MetasSection() {
 }
 
 
-/* ═══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    6. MANUAL DE USUARIO (EMBEDDED)
-   ═══════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 interface ManualChapter {
   id: string;
@@ -1190,9 +1190,9 @@ function ManualUsuarioSection() {
   );
 }
 
-/* ═══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    7. INFORMACION
-   ═══════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function InformacionSection() {
   const [pwaStatus, setPwaStatus] = useState<'installed' | 'installable' | 'unsupported'>('unsupported');
 

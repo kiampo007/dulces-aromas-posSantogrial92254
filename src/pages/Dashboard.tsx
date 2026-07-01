@@ -242,7 +242,7 @@ function StockAlerts({ items, onUpdate }: { items: StockItem[]; onUpdate: (id: s
             <AlertTriangle size={20} className="text-[#F59E0B]" />
             <h3 className="font-sans text-xl text-gray-800 dark:text-gray-100">Alertas de Stock</h3>
             <span className="px-2.5 py-1 rounded-full text-xs bg-[#F59E0B]/15 text-[#F59E0B] font-medium">
-              160 productos
+              {items.length} productos
             </span>
           </div>
           <button className="text-sm text-[#00BCD4] hover:underline flex items-center gap-1">

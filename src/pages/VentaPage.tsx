@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+﻿import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
@@ -25,7 +25,7 @@ import { useProducts } from '@/hooks/useProducts';
 import { useSales } from '@/hooks/useSales';
 import { useCuotas } from '@/hooks/useCuotas';
 
-/* ─── Types ─── */
+/* â”€â”€â”€ Types â”€â”€â”€ */
 interface Product {
   id: string;
   name: string;
@@ -41,8 +41,8 @@ interface CartItem extends Product {
 
 
 
-/* ─── Constants ─── */
-const CATEGORIES = ['Todos', 'Caballero', 'Dama', 'Niños', 'Unisex'] as const;
+/* â”€â”€â”€ Constants â”€â”€â”€ */
+const CATEGORIES = ['Todos', 'Caballero', 'Dama', 'NiÃ±os', 'Unisex'] as const;
 type Category = (typeof CATEGORIES)[number];
 
 const PAYMENT_METHODS = [
@@ -53,18 +53,18 @@ const PAYMENT_METHODS = [
   { key: 'credito' as const, label: 'A Credito', icon: Wallet },
 ];
 
-/* ─── Currency format ─── */
+/* â”€â”€â”€ Currency format â”€â”€â”€ */
 function fmt(n: number): string {
   return '$ ' + n.toLocaleString('es-CL');
 }
 
-/* ─── Receipt number generator ─── */
+/* â”€â”€â”€ Receipt number generator â”€â”€â”€ */
 
 
-/* ─── Mock Products ─── */
+/* â”€â”€â”€ Mock Products â”€â”€â”€ */
 
 
-/* ─── Confetti Component ─── */
+/* â”€â”€â”€ Confetti Component â”€â”€â”€ */
 function ConfettiEffect() {
   const pieces = useMemo(
     () =>
@@ -112,7 +112,7 @@ function ConfettiEffect() {
   );
 }
 
-/* ─── Success Checkmark ─── */
+/* â”€â”€â”€ Success Checkmark â”€â”€â”€ */
 function SuccessCheckmark() {
   return (
     <motion.div
@@ -149,7 +149,7 @@ function SuccessCheckmark() {
   );
 }
 
-/* ─── Main Page Component ─── */
+/* â”€â”€â”€ Main Page Component â”€â”€â”€ */
 export default function VentaPage() {
   /* -- State -- */
   const { products, adjustStock } = useProducts();
@@ -182,7 +182,7 @@ export default function VentaPage() {
       const matchCat =
         activeCategory === 'Todos'
           ? true
-          : activeCategory === 'Niños'
+          : activeCategory === 'NiÃ±os'
             ? p.category === 'ninos'
             : p.category === activeCategory.toLowerCase();
       const q = search.toLowerCase();
@@ -379,7 +379,7 @@ export default function VentaPage() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-5 -m-4 lg:-m-6 min-h-[calc(100dvh-56px-64px)] lg:min-h-[calc(100dvh-56px)]">
-      {/* ═══ LEFT: Product Browser ═══ */}
+      {/* â•â•â• LEFT: Product Browser â•â•â• */}
       <div className="flex-1 min-w-0 flex flex-col p-4 lg:p-6">
         {/* Page header */}
         <motion.div
@@ -610,7 +610,7 @@ export default function VentaPage() {
         )}
       </div>
 
-      {/* ═══ RIGHT: Cart Panel (Desktop) ═══ */}
+      {/* â•â•â• RIGHT: Cart Panel (Desktop) â•â•â• */}
       <motion.div
         className={cn(
           'hidden lg:flex w-[400px] xl:w-[420px] flex-col border-l',
@@ -644,7 +644,7 @@ export default function VentaPage() {
         />
       </motion.div>
 
-      {/* ═══ MOBILE: Cart FAB ═══ */}
+      {/* â•â•â• MOBILE: Cart FAB â•â•â• */}
       <button
         onClick={() => setShowCart(true)}
         className={cn(
@@ -668,7 +668,7 @@ export default function VentaPage() {
         </AnimatePresence>
       </button>
 
-      {/* ═══ MOBILE: Cart Bottom Sheet ═══ */}
+      {/* â•â•â• MOBILE: Cart Bottom Sheet â•â•â• */}
       <AnimatePresence>
         {showCart && (
           <>
@@ -724,7 +724,7 @@ export default function VentaPage() {
         )}
       </AnimatePresence>
 
-      {/* ═══ SALE CONFIRMATION MODAL ═══ */}
+      {/* â•â•â• SALE CONFIRMATION MODAL â•â•â• */}
       <AnimatePresence>
         {showConfirm && (
           <ModalOverlay onClose={() => !isProcessing && setShowConfirm(false)}>
@@ -821,7 +821,7 @@ export default function VentaPage() {
         )}
       </AnimatePresence>
 
-      {/* ═══ SUCCESS MODAL ═══ */}
+      {/* â•â•â• SUCCESS MODAL â•â•â• */}
       <AnimatePresence>
         {showSuccess && (
           <ModalOverlay onClose={() => { setShowSuccess(false); setShowReceipt(true); }}>
@@ -876,7 +876,7 @@ export default function VentaPage() {
         )}
       </AnimatePresence>
 
-      {/* ═══ RECEIPT PRINT VIEW ═══ */}
+      {/* â•â•â• RECEIPT PRINT VIEW â•â•â• */}
       <AnimatePresence>
         {showReceipt && (
           <ModalOverlay onClose={() => setShowReceipt(false)}>
@@ -928,7 +928,7 @@ export default function VentaPage() {
         )}
       </AnimatePresence>
 
-      {/* ═══ KEYBOARD SHORTCUTS MODAL ═══ */}
+      {/* â•â•â• KEYBOARD SHORTCUTS MODAL â•â•â• */}
       <AnimatePresence>
         {showShortcuts && (
           <ModalOverlay onClose={() => setShowShortcuts(false)}>
@@ -974,7 +974,7 @@ export default function VentaPage() {
         )}
       </AnimatePresence>
 
-      {/* ═══ QR SCANNER MODAL (placeholder) ═══ */}
+      {/* â•â•â• QR SCANNER MODAL (placeholder) â•â•â• */}
       <AnimatePresence>
         {showQRScanner && (
           <ModalOverlay onClose={() => setShowQRScanner(false)}>
@@ -1008,10 +1008,10 @@ export default function VentaPage() {
         )}
       </AnimatePresence>
 
-      {/* ═══ CONFETTI ═══ */}
+      {/* â•â•â• CONFETTI â•â•â• */}
       {showConfetti && <ConfettiEffect />}
 
-      {/* ═══ Print-only receipt (hidden) ═══ */}
+      {/* â•â•â• Print-only receipt (hidden) â•â•â• */}
       <div className="hidden print:block fixed inset-0 bg-white z-[100]">
         <div className="max-w-[80mm] mx-auto p-4">
           <ReceiptView
@@ -1029,9 +1029,9 @@ export default function VentaPage() {
   );
 }
 
-/* ═══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    CART PANEL CONTENT (shared desktop + mobile)
-   ═══════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function CartPanelContent({
   cart,
   itemCount,
@@ -1346,9 +1346,9 @@ function CartPanelContent({
   );
 }
 
-/* ═══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    RECEIPT VIEW (screen + print)
-   ═══════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function ReceiptView({
   receiptNumber,
   cart,
@@ -1461,9 +1461,9 @@ function ReceiptView({
   );
 }
 
-/* ═══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    MODAL OVERLAY
-   ═══════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function ModalOverlay({
   children,
   onClose,
