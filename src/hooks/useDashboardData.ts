@@ -291,7 +291,7 @@ export function useDashboardData() {
 }
 
 export function formatCurrency(value: number): string {
-  return $ ' + value.toLocaleString('es-ES').replace(/,/g, '.') + ';
+  return '$ ' + value.toLocaleString('es-ES').replace(/,/g, '.');
 }
 
 export function formatPercent(value: number): string {

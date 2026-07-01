@@ -984,7 +984,7 @@ export default function Dashboard() {
 
   // Refresh pedidos count when modal opens
   const handleOpenPedidos = useCallback(() => {
-    refreshPedidos();
+    // refreshPedidos()
     setShowPedidos(true);
   }, [refreshPedidos]);
 
