@@ -128,6 +128,15 @@ function loadDebts(): any[] {
   return [];
 }
 
+function getMonthlyTarget(): number {
+  if (typeof window === 'undefined') return 1000000;
+  try {
+    const stored = localStorage.getItem('dulces_aromas_meta_mes');
+    if (stored) return Number(stored);
+  } catch { /* ignore */ }
+  return 1000000;
+}
+
 function calculateRealData(): DashboardData {
   const products = loadProducts();
   const sales = loadSales();
@@ -204,7 +213,7 @@ function calculateRealData(): DashboardData {
     reminders: { stockBajo, agotados },
     monthlyGoal: {
       current: ventasHoy,
-      target: 1000000,
+      target: getMonthlyTarget(),
       month: monthNames[now.getMonth()],
       year: now.getFullYear(),
       daysElapsed: now.getDate(),
@@ -291,7 +300,7 @@ export function useDashboardData() {
 }
 
 export function formatCurrency(value: number): string {
-  return '$ ' + value.toLocaleString('es-ES').replace(/,/g, '.');
+  return '$ ' + value.toLocaleString('es-CL').replace(/,/g, '.');
 }
 
 export function formatPercent(value: number): string {

@@ -363,7 +363,7 @@ export default function VentaPage() {
   const [receiptNumber, setReceiptNumber] = useState('');
   useEffect(() => {
     if (showSuccess) {
-      const sales = JSON.parse(localStorage.getItem('dulces_aromas_sales') || '[]');
+      const sales = JSON.parse(localStorage.getItem('sales') || '[]');
       if (sales.length > 0) {
         setReceiptNumber(sales[sales.length - 1].id);
       }
