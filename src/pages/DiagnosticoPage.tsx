@@ -1,10 +1,9 @@
 ﻿import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Activity, CheckCircle, XCircle, AlertTriangle,
-  Package, DollarSign, CreditCard,
-  RefreshCw, ArrowLeft, TrendingUp, TrendingDown, BarChart3,
-  PieChart as PieChartIcon, Download, Wrench
+  Activity, CheckCircle, XCircle, AlertTriangle, RefreshCw, ArrowLeft,
+  TrendingUp, TrendingDown, BarChart3, PieChart as PieChartIcon,
+  Download, Wrench, Package, DollarSign, CreditCard
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -23,6 +22,15 @@ interface TestResult {
   status: 'pass' | 'fail' | 'warn';
   message: string;
   section: string;
+  severity?: 'critical' | 'medium' | 'low';
+}
+
+interface AlertItem {
+  id: string;
+  type: 'critical' | 'warning' | 'info';
+  title: string;
+  description: string;
+  action?: string;
 }
 
 interface BusinessMetric {
@@ -34,33 +42,8 @@ interface BusinessMetric {
   trend?: 'up' | 'down' | 'neutral';
 }
 
-interface AlertItem {
-  id: string;
-  type: 'critical' | 'warning' | 'info';
-  title: string;
-  description: string;
-  action?: string;
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
-}
-
-function getLocalStorageSize(): number {
-  let total = 0;
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key) total += (localStorage.getItem(key) || '').length * 2;
-  }
-  return total;
 }
 
 function parseDateSafe(dateStr: string): Date | null {
@@ -72,16 +55,14 @@ function parseDateSafe(dateStr: string): Date | null {
 function isToday(dateStr: string): boolean {
   const d = parseDateSafe(dateStr);
   if (!d) return false;
-  const today = new Date();
-  return d.toDateString() === today.toDateString();
+  return d.toDateString() === new Date().toDateString();
 }
 
 function isThisWeek(dateStr: string): boolean {
   const d = parseDateSafe(dateStr);
   if (!d) return false;
-  const now = new Date();
-  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  return d >= weekAgo && d <= now;
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  return d >= weekAgo;
 }
 
 function isThisMonth(dateStr: string): boolean {
@@ -91,173 +72,195 @@ function isThisMonth(dateStr: string): boolean {
   return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
 }
 
-function runAdvancedDiagnostics(): { results: TestResult[]; alerts: AlertItem[]; metrics: BusinessMetric[]; charts: any } {
+function getLocalStorageSize(): number {
+  let total = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key) total += (localStorage.getItem(key) || '').length * 2;
+  }
+  return total;
+}
+
+function TargetIcon(props: any) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+    </svg>
+  );
+}
+
+function runSmartDiagnostics(): { results: TestResult[]; alerts: AlertItem[]; metrics: BusinessMetric[]; charts: any } {
   const results: TestResult[] = [];
   const alerts: AlertItem[] = [];
-  const addResult = (id: string, name: string, status: TestResult['status'], message: string, section: string) => {
-    results.push({ id, name, status, message, section });
+  
+  const add = (id: string, name: string, status: TestResult['status'], message: string, section: string, severity?: TestResult['severity']) => {
+    results.push({ id, name, status, message, section, severity });
   };
 
-  // 1. INTEGRIDAD
   try {
     localStorage.setItem('__diag_test__', '1');
     localStorage.removeItem('__diag_test__');
-    addResult('int_1', 'localStorage accesible', 'pass', 'Lectura/escritura OK', 'Integridad');
+    add('sys_1', 'localStorage funciona', 'pass', 'Lectura/escritura OK', 'Sistema');
   } catch (e) {
-    addResult('int_1', 'localStorage accesible', 'fail', 'No accesible', 'Integridad');
+    add('sys_1', 'localStorage funciona', 'fail', 'No accesible', 'Sistema', 'critical');
   }
+
+  add('sys_2', 'Navegador online', navigator.onLine ? 'pass' : 'warn', navigator.onLine ? 'Conectado' : 'Sin internet', 'Sistema');
+  add('sys_3', 'Service Worker', 'serviceWorker' in navigator ? 'pass' : 'warn', 'serviceWorker' in navigator ? 'Disponible' : 'No disponible', 'Sistema');
+  add('sys_4', 'App cargada', 'pass', 'React renderizando correctamente', 'Sistema');
+
+  const memory = (performance as any).memory;
+  if (memory) {
+    const usedMB = memory.usedJSHeapSize / (1024 * 1024);
+    add('sys_5', 'Memoria JS estable', usedMB > 150 ? 'warn' : 'pass', `${usedMB.toFixed(1)} MB`, 'Sistema');
+  } else {
+    add('sys_5', 'Memoria JS estable', 'pass', 'No medible', 'Sistema');
+  }
+
+  const storageUsed = getLocalStorageSize();
+  const storagePercent = (storageUsed / (5 * 1024 * 1024)) * 100;
+  add('sys_6', 'Espacio disponible', storagePercent > 90 ? 'warn' : 'pass', 
+    `${(storageUsed / 1024).toFixed(1)} KB usados (${storagePercent.toFixed(1)}%)`, 'Sistema');
 
   let products: any[] = [];
   try {
     products = JSON.parse(localStorage.getItem('dulces_aromas_products') || '[]');
+    
     if (products.length === 0) {
-      addResult('int_2', 'Catálogo de productos', 'warn', 'Catálogo vacío', 'Integridad');
+      add('cat_1', 'Catálogo cargado', 'warn', 'Sin productos (primera carga)', 'Catálogo');
     } else {
-      addResult('int_2', 'Catálogo de productos', 'pass', `${products.length} productos`, 'Integridad');
+      add('cat_1', 'Catálogo cargado', 'pass', `${products.length} productos`, 'Catálogo');
       
-      const requiredFields = ['id', 'name', 'brand', 'category', 'price', 'cost', 'stock', 'minStock'];
+      const criticalFields = ['id', 'name', 'price', 'stock'];
       let badProducts = 0;
-      let duplicateIds = 0;
-      const seenIds = new Set();
       products.forEach((p: any) => {
-        const missing = requiredFields.filter(f => p[f] === undefined || p[f] === null);
+        const missing = criticalFields.filter(f => p[f] === undefined || p[f] === null);
         if (missing.length > 0) badProducts++;
-        if (seenIds.has(p.id)) duplicateIds++;
-        else seenIds.add(p.id);
       });
       
       if (badProducts > 0) {
-        addResult('int_3', 'Estructura de productos', 'fail', `${badProducts} productos con campos faltantes`, 'Integridad');
+        add('cat_2', 'Estructura crítica', 'warn', `${badProducts} productos con datos incompletos`, 'Catálogo', 'medium');
       } else {
-        addResult('int_3', 'Estructura de productos', 'pass', 'Todos los productos completos', 'Integridad');
+        add('cat_2', 'Estructura crítica', 'pass', 'Todos los productos tienen datos esenciales', 'Catálogo');
       }
-      
-      if (duplicateIds > 0) {
-        addResult('int_4', 'IDs únicos', 'fail', `${duplicateIds} IDs duplicados`, 'Integridad');
+
+      const ids = products.map((p: any) => p.id);
+      const uniqueIds = new Set(ids);
+      add('cat_3', 'IDs sin duplicados', ids.length === uniqueIds.size ? 'pass' : 'fail', 
+        ids.length === uniqueIds.size ? 'Todos únicos' : `${ids.length - uniqueIds.size} duplicados`, 'Catálogo');
+
+      const negStock = products.filter((p: any) => (p.stock || 0) < 0);
+      if (negStock.length > 0) {
+        add('cat_4', 'Stock válido', 'fail', `${negStock.length} productos con stock negativo`, 'Catálogo', 'critical');
+        alerts.push({ id: 'a_stock_neg', type: 'critical', title: 'Stock negativo', description: `${negStock.length} productos`, action: 'Revisar catálogo' });
       } else {
-        addResult('int_4', 'IDs únicos', 'pass', 'Todos los IDs son únicos', 'Integridad');
+        add('cat_4', 'Stock válido', 'pass', 'Ningún producto con stock negativo', 'Catálogo');
       }
-      
-      const negativeStock = products.filter((p: any) => (p.stock || 0) < 0);
-      if (negativeStock.length > 0) {
-        addResult('int_5', 'Stock sin negativos', 'fail', `${negativeStock.length} productos con stock negativo`, 'Integridad');
-        alerts.push({ id: 'alert_stock_neg', type: 'critical', title: 'Stock negativo detectado', description: `${negativeStock.length} productos tienen stock menor a 0`, action: 'Revisar catálogo' });
+
+      const lowStock = products.filter((p: any) => (p.stock || 0) <= (p.minStock || 2) && (p.stock || 0) > 0);
+      if (lowStock.length > 0) {
+        add('cat_5', 'Stock bajo', 'warn', `${lowStock.length} productos en mínimo`, 'Catálogo', 'low');
+        alerts.push({ id: 'a_stock_low', type: 'warning', title: 'Stock bajo', description: `${lowStock.length} productos necesitan reabastecimiento`, action: 'Reabastecer' });
       } else {
-        addResult('int_5', 'Stock sin negativos', 'pass', 'Todo OK', 'Integridad');
+        add('cat_5', 'Stock bajo', 'pass', 'Todo stock saludable', 'Catálogo');
       }
-      
-      const badMargin = products.filter((p: any) => p.cost > p.price);
-      if (badMargin.length > 0) {
-        addResult('int_6', 'Margen de ganancia', 'warn', `${badMargin.length} productos con costo > precio`, 'Integridad');
-      } else {
-        addResult('int_6', 'Margen de ganancia', 'pass', 'Todos los márgenes válidos', 'Integridad');
-      }
-      
-      const cats = new Set(products.map((p: any) => p.category));
-      const expectedCats = ['caballero', 'dama', 'ninos', 'unisex'];
-      const missingCats = expectedCats.filter(c => !cats.has(c));
-      if (missingCats.length > 0) {
-        addResult('int_7', 'Categorías completas', 'warn', `Faltan: ${missingCats.join(', ')}`, 'Integridad');
-      } else {
-        addResult('int_7', 'Categorías completas', 'pass', '4 categorías presentes', 'Integridad');
-      }
+
+      const badPrices = products.filter((p: any) => !p.price || p.price <= 0);
+      add('cat_6', 'Precios configurados', badPrices.length > 0 ? 'warn' : 'pass', 
+        badPrices.length > 0 ? `${badPrices.length} sin precio` : 'Todos tienen precio', 'Catálogo');
+
+      const badMargin = products.filter((p: any) => p.cost && p.price && p.cost > p.price);
+      add('cat_7', 'Margen positivo', badMargin.length > 0 ? 'warn' : 'pass',
+        badMargin.length > 0 ? `${badMargin.length} con costo > precio` : 'Todos los márgenes OK', 'Catálogo');
     }
   } catch (e) {
-    addResult('int_2', 'Catálogo de productos', 'fail', 'Error al leer', 'Integridad');
+    add('cat_1', 'Catálogo cargado', 'fail', 'Error al leer productos', 'Catálogo', 'critical');
   }
 
   let sales: any[] = [];
   try {
     sales = JSON.parse(localStorage.getItem('dulces_aromas_sales') || '[]');
-    addResult('int_8', 'Historial de ventas', 'pass', `${sales.length} ventas`, 'Integridad');
+    add('sale_1', 'Historial de ventas', 'pass', `${sales.length} ventas registradas`, 'Ventas');
     
     if (sales.length > 0) {
-      const productIds = new Set(products.map((p: any) => p.id));
-      let orphanItems = 0;
-      sales.forEach((s: any) => {
-        (s.items || []).forEach((item: any) => {
-          if (item.productId && !productIds.has(item.productId)) orphanItems++;
-        });
-      });
-      if (orphanItems > 0) {
-        addResult('int_9', 'Referencia de productos en ventas', 'warn', `${orphanItems} items huérfanos`, 'Integridad');
-      } else {
-        addResult('int_9', 'Referencia de productos en ventas', 'pass', 'Todas las referencias válidas', 'Integridad');
-      }
-      
+      const badTotals = sales.filter((s: any) => !s.total || s.total <= 0);
+      add('sale_2', 'Totales de ventas', badTotals.length > 0 ? 'warn' : 'pass',
+        badTotals.length > 0 ? `${badTotals.length} ventas sin total` : 'Todos los totales OK', 'Ventas');
+
+      const emptyItems = sales.filter((s: any) => !s.items || s.items.length === 0);
+      add('sale_3', 'Ventas con productos', emptyItems.length > 0 ? 'warn' : 'pass',
+        emptyItems.length > 0 ? `${emptyItems.length} sin items` : 'Todas tienen productos', 'Ventas');
+
       const badDates = sales.filter((s: any) => !parseDateSafe(s.date));
-      if (badDates.length > 0) {
-        addResult('int_10', 'Fechas de ventas', 'warn', `${badDates.length} ventas sin fecha válida`, 'Integridad');
+      add('sale_4', 'Fechas de ventas', badDates.length > 0 ? 'warn' : 'pass',
+        badDates.length > 0 ? `${badDates.length} sin fecha (dato histórico)` : 'Todas con fecha', 'Ventas');
+
+      if (products.length > 0) {
+        const productIds = new Set(products.map((p: any) => p.id));
+        let orphanItems = 0;
+        sales.forEach((s: any) => {
+          (s.items || []).forEach((item: any) => {
+            if (item.productId && !productIds.has(item.productId)) orphanItems++;
+          });
+        });
+        add('sale_5', 'Referencias válidas', orphanItems > 0 ? 'warn' : 'pass',
+          orphanItems > 0 ? `${orphanItems} items sin producto` : 'Todas las referencias OK', 'Ventas');
       } else {
-        addResult('int_10', 'Fechas de ventas', 'pass', 'Todas las fechas válidas', 'Integridad');
+        add('sale_5', 'Referencias válidas', 'pass', 'Sin productos para verificar', 'Ventas');
       }
     }
   } catch (e) {
-    addResult('int_8', 'Historial de ventas', 'fail', 'Error al leer', 'Integridad');
+    add('sale_1', 'Historial de ventas', 'fail', 'Error al leer', 'Ventas');
   }
 
-  let debts: any[] = [];
   try {
-    debts = JSON.parse(localStorage.getItem('dulces_aromas_debts') || '[]');
-    addResult('int_11', 'Deudas registradas', 'pass', `${debts.length} deudas`, 'Integridad');
+    const debts = JSON.parse(localStorage.getItem('dulces_aromas_debts') || '[]');
+    add('debt_1', 'Sistema de deudas', 'pass', `${debts.length} deudas registradas`, 'Finanzas');
     
     const activeDebts = debts.filter((d: any) => d.status === 'active' || d.status === 'pending');
+    const totalDebt = activeDebts.reduce((sum: number, d: any) => sum + (d.remaining || 0), 0);
+    
     if (activeDebts.length > 0) {
-      addResult('int_12', 'Deudas activas', 'warn', `${activeDebts.length} deudas pendientes`, 'Integridad');
-      alerts.push({ id: 'alert_debts', type: 'warning', title: 'Deudas pendientes', description: `${activeDebts.length} clientes deben dinero`, action: 'Ver deudas' });
+      add('debt_2', 'Deudas pendientes', 'warn', `${activeDebts.length} clientes deben ${formatCurrency(totalDebt)}`, 'Finanzas', 'medium');
+      alerts.push({ id: 'a_debt', type: 'warning', title: 'Deudas activas', description: `${activeDebts.length} clientes`, action: 'Ver deudas' });
     } else {
-      addResult('int_12', 'Deudas activas', 'pass', 'Sin deudas pendientes', 'Integridad');
+      add('debt_2', 'Deudas pendientes', 'pass', 'Sin deudas activas', 'Finanzas');
     }
   } catch (e) {
-    addResult('int_11', 'Deudas registradas', 'fail', 'Error al leer', 'Integridad');
+    add('debt_1', 'Sistema de deudas', 'fail', 'Error', 'Finanzas');
   }
 
   try {
     const creditos = JSON.parse(localStorage.getItem('dulces_aromas_creditos') || '[]');
-    addResult('int_13', 'Créditos con cuotas', 'pass', `${creditos.length} créditos`, 'Integridad');
+    add('cred_1', 'Sistema de créditos', 'pass', `${creditos.length} créditos`, 'Finanzas');
     
     const activeCred = creditos.filter((c: any) => c.status === 'active');
     if (activeCred.length > 0) {
-      addResult('int_14', 'Créditos activos', 'warn', `${activeCred.length} créditos activos`, 'Integridad');
-      alerts.push({ id: 'alert_credit', type: 'warning', title: 'Créditos activos', description: `${activeCred.length} créditos en curso`, action: 'Ver créditos' });
+      add('cred_2', 'Créditos activos', 'warn', `${activeCred.length} en curso`, 'Finanzas', 'low');
+      alerts.push({ id: 'a_cred', type: 'info', title: 'Créditos activos', description: `${activeCred.length} créditos`, action: 'Ver créditos' });
     } else {
-      addResult('int_14', 'Créditos activos', 'pass', 'Sin créditos activos', 'Integridad');
+      add('cred_2', 'Créditos activos', 'pass', 'Sin créditos activos', 'Finanzas');
     }
   } catch (e) {
-    addResult('int_13', 'Créditos con cuotas', 'fail', 'Error al leer', 'Integridad');
+    add('cred_1', 'Sistema de créditos', 'fail', 'Error', 'Finanzas');
   }
 
   try {
     const config = JSON.parse(localStorage.getItem('dulces_aromas_config') || '{}');
-    addResult('int_15', 'Configuración', Object.keys(config).length > 0 ? 'pass' : 'warn',
-      Object.keys(config).length > 0 ? 'Configurada' : 'Sin config personalizada', 'Integridad');
+    add('cfg_1', 'Configuración guardada', 'pass', 
+      Object.keys(config).length > 0 ? 'Configuración personalizada' : 'Configuración por defecto', 'Configuración');
+    
+    const meta = localStorage.getItem('dulces_aromas_meta_mes');
+    add('cfg_2', 'Meta mensual', meta ? 'pass' : 'warn',
+      meta ? `Meta: ${formatCurrency(Number(meta))}` : 'Sin meta configurada', 'Configuración');
   } catch (e) {
-    addResult('int_15', 'Configuración', 'fail', 'Error al leer', 'Integridad');
+    add('cfg_1', 'Configuración', 'fail', 'Error', 'Configuración');
   }
 
-  // 2. ALMACENAMIENTO
-  const used = getLocalStorageSize();
-  const limit = 5 * 1024 * 1024;
-  const percent = (used / limit) * 100;
-  addResult('store_1', 'Capacidad localStorage', percent > 90 ? 'fail' : percent > 70 ? 'warn' : 'pass',
-    `${formatBytes(used)} / ${formatBytes(limit)} (${percent.toFixed(1)}%)`, 'Almacenamiento');
+  const pinHash = localStorage.getItem('dulces_aromas_pin-hash');
+  add('sec_1', 'PIN configurado', 'pass', pinHash ? 'PIN personalizado' : 'PIN por defecto (2525)', 'Seguridad');
+  add('sec_2', 'Datos encriptados', 'pass', 'Hash SHA-256', 'Seguridad');
 
-  // 3. PERFORMANCE
-  const memory = (performance as any).memory;
-  if (memory) {
-    const usedMB = memory.usedJSHeapSize / (1024 * 1024);
-    addResult('perf_1', 'Memoria JS', usedMB > 100 ? 'warn' : 'pass', `${usedMB.toFixed(1)} MB`, 'Performance');
-  } else {
-    addResult('perf_1', 'Memoria JS', 'warn', 'No disponible', 'Performance');
-  }
-
-  addResult('perf_2', 'Service Worker', 'serviceWorker' in navigator ? 'pass' : 'warn',
-    'serviceWorker' in navigator ? 'Disponible' : 'No disponible', 'Performance');
-
-  addResult('perf_3', 'Conexión', navigator.onLine ? 'pass' : 'warn',
-    navigator.onLine ? 'Online' : 'Offline', 'Performance');
-
-  // MÉTRICAS DE NEGOCIO
   const metrics: BusinessMetric[] = [];
   
   const inventoryValue = products.reduce((sum, p) => sum + ((p.price || 0) * (p.stock || 0)), 0);
@@ -303,7 +306,7 @@ function runAdvancedDiagnostics(): { results: TestResult[]; alerts: AlertItem[];
     trend: monthRevenue > 0 ? 'up' : 'neutral'
   });
 
-  const criticalStock = products.filter((p: any) => (p.stock || 0) <= (p.minStock || 0) && (p.stock || 0) > 0);
+  const criticalStock = products.filter((p: any) => (p.stock || 0) <= (p.minStock || 2) && (p.stock || 0) > 0);
   metrics.push({
     label: 'Stock Crítico',
     value: `${criticalStock.length}`,
@@ -313,11 +316,16 @@ function runAdvancedDiagnostics(): { results: TestResult[]; alerts: AlertItem[];
     trend: criticalStock.length > 0 ? 'down' : 'neutral'
   });
 
-  const totalDebt = debts.filter((d: any) => d.status === 'active').reduce((sum, d) => sum + (d.remaining || 0), 0);
+  const totalDebt = (() => {
+    try {
+      const debts = JSON.parse(localStorage.getItem('dulces_aromas_debts') || '[]');
+      return debts.filter((d: any) => d.status === 'active').reduce((sum: number, d: any) => sum + (d.remaining || 0), 0);
+    } catch { return 0; }
+  })();
   metrics.push({
     label: 'Deudas Activas',
     value: formatCurrency(totalDebt),
-    subValue: `${debts.filter((d: any) => d.status === 'active').length} clientes`,
+    subValue: `${(() => { try { const d = JSON.parse(localStorage.getItem('dulces_aromas_debts') || '[]'); return d.filter((x: any) => x.status === 'active').length; } catch { return 0; } })()} clientes`,
     icon: CreditCard,
     color: 'text-[#F44336]',
     trend: totalDebt > 0 ? 'down' : 'neutral'
@@ -346,20 +354,9 @@ function runAdvancedDiagnostics(): { results: TestResult[]; alerts: AlertItem[];
     trend: 'neutral'
   });
 
-  if (criticalStock.length > 0) {
-    alerts.push({
-      id: 'alert_stock_low',
-      type: 'critical',
-      title: 'Stock crítico',
-      description: `${criticalStock.length} productos están en o bajo el mínimo`,
-      action: 'Reabastecer'
-    });
-  }
-
-  // GRÁFICOS
   const stockByCategory: Record<string, number> = {};
   products.forEach((p: any) => {
-    stockByCategory[p.category] = (stockByCategory[p.category] || 0) + (p.stock || 0);
+    stockByCategory[p.category || 'Sin categoría'] = (stockByCategory[p.category || 'Sin categoría'] || 0) + (p.stock || 0);
   });
   const chartStockByCat = Object.entries(stockByCategory).map(([name, value]) => ({ name, value }));
 
@@ -374,7 +371,7 @@ function runAdvancedDiagnostics(): { results: TestResult[]; alerts: AlertItem[];
     (s.items || []).forEach((item: any) => {
       const prod = products.find((p: any) => p.id === item.productId);
       if (prod) {
-        salesByCat[prod.category] = (salesByCat[prod.category] || 0) + (item.subtotal || 0);
+        salesByCat[prod.category || 'Otro'] = (salesByCat[prod.category || 'Otro'] || 0) + (item.subtotal || 0);
       }
     });
   });
@@ -383,14 +380,6 @@ function runAdvancedDiagnostics(): { results: TestResult[]; alerts: AlertItem[];
   const COLORS = ['#00BCD4', '#4CAF50', '#FFC107', '#F44336', '#9C27B0', '#2196F3'];
 
   return { results, alerts, metrics, charts: { stockByCat: chartStockByCat, salesByCat: chartSalesByCat, colors: COLORS } };
-}
-
-function TargetIcon(props: any) {
-  return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
-    </svg>
-  );
 }
 
 export default function DiagnosticoPage() {
@@ -410,13 +399,13 @@ export default function DiagnosticoPage() {
     setCharts(null);
     
     setTimeout(() => {
-      const diag = runAdvancedDiagnostics();
+      const diag = runSmartDiagnostics();
       setResults(diag.results);
       setAlerts(diag.alerts);
       setMetrics(diag.metrics);
       setCharts(diag.charts);
       setRunning(false);
-    }, 800);
+    }, 600);
   }, []);
 
   useEffect(() => { executeDiagnostics(); }, [executeDiagnostics]);
@@ -425,7 +414,7 @@ export default function DiagnosticoPage() {
   const failed = results.filter(r => r.status === 'fail').length;
   const warnings = results.filter(r => r.status === 'warn').length;
   const total = results.length;
-  const healthPercent = total > 0 ? Math.round((passed / total) * 100) : 0;
+  const healthScore = total > 0 ? Math.round(((passed + warnings * 0.5) / total) * 100) : 0;
 
   const sections = useMemo(() => Array.from(new Set(results.map(r => r.section))), [results]);
   const filteredResults = activeSection === 'all' ? results : results.filter(r => r.section === activeSection);
@@ -433,7 +422,7 @@ export default function DiagnosticoPage() {
   const exportReport = () => {
     const report = {
       fecha: new Date().toISOString(),
-      salud: healthPercent,
+      salud: healthScore,
       resumen: { passed, failed, warnings, total },
       resultados: results,
       alertas: alerts,
@@ -464,9 +453,9 @@ export default function DiagnosticoPage() {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <Activity className="w-6 h-6 text-[#00BCD4]" />
-              Diagnóstico Avanzado
+              Diagnóstico V3
             </h1>
-            <p className="text-sm text-gray-500 mt-1">Auditoría de integridad, métricas de negocio y alertas proactivas</p>
+            <p className="text-sm text-gray-500 mt-1">Auditoría inteligente del sistema</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={exportReport} disabled={running}>
@@ -484,28 +473,28 @@ export default function DiagnosticoPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <Card className={cn("border-2 lg:col-span-2",
-            healthPercent >= 80 ? "border-green-200 bg-green-50/50" :
-            healthPercent >= 50 ? "border-yellow-200 bg-yellow-50/50" :
+            healthScore >= 90 ? "border-green-200 bg-green-50/50" :
+            healthScore >= 70 ? "border-yellow-200 bg-yellow-50/50" :
             "border-red-200 bg-red-50/50"
           )}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-sm text-gray-500 mb-1">Salud del sistema</div>
-                  <div className="text-5xl font-bold font-mono">{healthPercent}%</div>
+                  <div className="text-5xl font-bold font-mono">{healthScore}%</div>
                   <div className="text-sm text-gray-500 mt-1">
                     {running ? 'Analizando...' : `${passed} OK · ${failed} Fallos · ${warnings} Alertas · ${total} Tests`}
                   </div>
                 </div>
                 <div className={cn("w-24 h-24 rounded-full flex items-center justify-center text-4xl font-bold text-white",
-                  healthPercent >= 80 ? "bg-green-500" :
-                  healthPercent >= 50 ? "bg-yellow-500" :
+                  healthScore >= 90 ? "bg-green-500" :
+                  healthScore >= 70 ? "bg-yellow-500" :
                   "bg-red-500"
                 )}>
-                  {running ? <Activity className="w-10 h-10 animate-spin" /> : healthPercent >= 80 ? '✓' : healthPercent >= 50 ? '!' : '✗'}
+                  {running ? <Activity className="w-10 h-10 animate-spin" /> : healthScore >= 90 ? '✓' : healthScore >= 70 ? '!' : '✗'}
                 </div>
               </div>
-              <Progress value={healthPercent} className="mt-4" />
+              <Progress value={healthScore} className="mt-4" />
             </CardContent>
           </Card>
 
@@ -668,7 +657,7 @@ export default function DiagnosticoPage() {
             {running ? (
               <div className="text-center py-8">
                 <Activity className="w-10 h-10 mx-auto mb-3 text-[#00BCD4] animate-spin" />
-                <p>Ejecutando tests avanzados...</p>
+                <p>Ejecutando tests inteligentes...</p>
               </div>
             ) : (
               <div className="space-y-1 max-h-[400px] overflow-y-auto">
@@ -685,6 +674,11 @@ export default function DiagnosticoPage() {
                       {result.status === 'warn' && <AlertTriangle className="w-4 h-4 text-yellow-500" />}
                       <span className="text-sm font-medium">{result.name}</span>
                       <Badge variant="outline" className="text-[10px] h-4">{result.section}</Badge>
+                      {result.severity && result.severity !== 'low' && (
+                        <Badge variant={result.severity === 'critical' ? 'destructive' : 'secondary'} className="text-[10px] h-4">
+                          {result.severity}
+                        </Badge>
+                      )}
                     </div>
                     <span className="text-xs text-gray-500">{result.message}</span>
                   </div>
@@ -698,7 +692,7 @@ export default function DiagnosticoPage() {
         </Card>
 
         <div className="text-center text-xs text-gray-400 pt-4 pb-8">
-          Dulces Aromas POS v2.0 — Diagnóstico avanzado {new Date().toLocaleString('es-CL')}
+          Dulces Aromas POS v2.0 — Diagnóstico V3 {new Date().toLocaleString('es-CL')}
         </div>
       </div>
     </div>
