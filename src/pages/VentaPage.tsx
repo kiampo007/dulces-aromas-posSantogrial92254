@@ -76,7 +76,7 @@ function nextReceiptNumber(): string {
 }
 
 /* ─── Mock Products ─── */
-const MOCK_PRODUCTS: Product[] = [
+// const MOCK_PRODUCTS: Product[] = [
   { id: 'p1', name: 'Sauvage Elixir', brand: 'Dior', price: 89000, stock: 12, category: 'caballero' },
   { id: 'p2', name: 'Light Blue Intense', brand: 'Dolce & Gabbana', price: 72000, stock: 8, category: 'caballero' },
   { id: 'p3', name: 'Chance Eau Tendre', brand: 'Chanel', price: 95000, stock: 15, category: 'dama' },

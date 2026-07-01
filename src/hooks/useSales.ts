@@ -45,7 +45,7 @@ export function useSales() {
   const addSale = useCallback((sale: Omit<Sale, 'id' | 'createdAt'>) => {
     const newSale: Sale = {
       ...sale,
-      id: sale__,
+      id: sale,
       createdAt: new Date().toISOString(),
     };
     setSales(prev => [newSale, ...prev]);
