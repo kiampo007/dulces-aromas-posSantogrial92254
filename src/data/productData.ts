@@ -218,15 +218,9 @@ export const seedProducts: Product[] = [
   createProduct('Portrait of a Lady', 'Frederic Malle', 'unisex', 76000, 37000, 5, 2, 'Oriental, Floral, Amaderado', 'Fragancia con rosa turca, frambuesa, patchouli e incienso.'),
   createProduct('Gypsy Water', 'Byredo', 'unisex', 68000, 33000, 10, 3, 'Amaderado, Citrico, Balsámico', 'Fragancia bohemia con limon, pimienta, incienso y sándalo. Alma gitana.'),
   createProduct('Mojave Ghost', 'Byredo', 'unisex', 70000, 34000, 8, 3, 'Floral, Frutal, Amaderado', 'Fragancia eterea con pera, saúco, magnolia y sándalo. Fantasma del desierto.'),
-  createProduct('Blanche', 'Byredo', 'unisex', 68000, 33000, 12, 4, 'Floral, Almizclado, Amaderado', 'Fragancia con rosa, peonia, sándalo y almizcle dorado. Pureza.'),
-  createProduct('Bal d\'Afrique', 'Byredo', 'unisex', 70000, 34000, 9, 3, 'Floral, Amaderado, Balsámico', 'Fragancia con maracuya, magnolia, cedro y musgo de roble. Baile africano.'),
-  createProduct('Black Saffron', 'Byredo', 'unisex', 72000, 35000, 7, 2, 'Oriental, Cuero, Especiado', 'Fragancia con azafrán, cuero, violeta y ciruela negra.'),
 ];
 
 export const CATEGORIES: { value: Category | 'todos'; label: string }[] = [
   { value: 'todos', label: 'Todos' },
   { value: 'caballero', label: 'Caballero' },
-  { value: 'dama', label: 'Dama' },
-  { value: 'ninos', label: 'Ninos' },
-  { value: 'unisex', label: 'Unisex' },
 ];
