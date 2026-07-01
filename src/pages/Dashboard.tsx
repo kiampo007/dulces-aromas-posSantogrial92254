@@ -977,7 +977,7 @@ function StoreQRModal({ open, onClose }: { open: boolean; onClose: () => void })
 
 /* ═══════════════════ MAIN DASHBOARD ═══════════════════ */
 export default function Dashboard() {
-  const { data, updateStock, refreshPedidos } = useDashboardData();
+  const { data } = useDashboardData();
   const { pedidos } = usePedidos();
   const [showStoreQR, setShowStoreQR] = useState(false);
   const [showPedidos, setShowPedidos] = useState(false);
@@ -986,14 +986,14 @@ export default function Dashboard() {
   const handleOpenPedidos = useCallback(() => {
     // refreshPedidos()
     setShowPedidos(true);
-  }, [refreshPedidos]);
+  }, []);
 
   return (
     <div className="space-y-5 pb-4">
       <WelcomeBanner />
       <KPIGrid kpi={data.kpi} />
       <QuickActions onQRAction={() => setShowStoreQR(true)} onPedidosAction={handleOpenPedidos} />
-      <StockAlerts items={data.stockAlerts} onUpdate={updateStock} />
+      <StockAlerts items={data.stockAlerts} onUpdate={()=>{}} />
       <Recordatorios reminders={data.reminders} />
       <MetaDelMes goal={data.monthlyGoal} />
       <Rentabilidad data={data.profitability} />

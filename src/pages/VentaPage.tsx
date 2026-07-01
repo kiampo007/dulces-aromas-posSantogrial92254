@@ -38,18 +38,7 @@ interface CartItem extends Product {
   quantity: number;
 }
 
-interface Sale {
-  id: string;
-  items: CartItem[];
-  subtotal: number;
-  discount: number;
-  total: number;
-  paymentMethod: 'efectivo' | 'tarjeta' | 'transferencia' | 'mercadopago' | 'credito';
-  clientName?: string;
-  clientPhone?: string;
-  dueDate?: string;
-  createdAt: string;
-}
+
 
 /* ─── Constants ─── */
 const CATEGORIES = ['Todos', 'Caballero', 'Dama', 'Niños', 'Unisex'] as const;
@@ -69,27 +58,10 @@ function fmt(n: number): string {
 }
 
 /* ─── Receipt number generator ─── */
-function nextReceiptNumber(): string {
-  const sales = JSON.parse(localStorage.getItem('sales') || '[]') as Sale[];
-  const n = sales.length + 1;
-  return String(n).padStart(4, '0');
-}
+
 
 /* ─── Mock Products ─── */
-// const MOCK_PRODUCTS: Product[] = [
-  { id: 'p1', name: 'Sauvage Elixir', brand: 'Dior', price: 89000, stock: 12, category: 'caballero' },
-  { id: 'p2', name: 'Light Blue Intense', brand: 'Dolce & Gabbana', price: 72000, stock: 8, category: 'caballero' },
-  { id: 'p3', name: 'Chance Eau Tendre', brand: 'Chanel', price: 95000, stock: 15, category: 'dama' },
-  { id: 'p4', name: 'La Vie Est Belle', brand: 'Lancome', price: 78000, stock: 6, category: 'dama' },
-  { id: 'p5', name: 'Bad Boy Cobalt', brand: 'Carolina Herrera', price: 68000, stock: 20, category: 'caballero' },
-  { id: 'p6', name: 'Acqua di Gio', brand: 'Giorgio Armani', price: 82000, stock: 4, category: 'caballero' },
-  { id: 'p7', name: '212 VIP Rosé', brand: 'Carolina Herrera', price: 65000, stock: 10, category: 'dama' },
-  { id: 'p8', name: 'One Million', brand: 'Paco Rabanne', price: 75000, stock: 18, category: 'caballero' },
-  { id: 'p9', name: 'Scandal', brand: 'Jean Paul Gaultier', price: 70000, stock: 7, category: 'dama' },
-  { id: 'p10', name: 'Baby Touch', brand: 'Burberry', price: 35000, stock: 25, category: 'ninos' },
-  { id: 'p11', name: 'CK One', brand: 'Calvin Klein', price: 45000, stock: 30, category: 'unisex' },
-  { id: 'p12', name: 'Eros', brand: 'Versace', price: 62000, stock: 9, category: 'caballero' },
-];
+
 
 /* ─── Confetti Component ─── */
 function ConfettiEffect() {
