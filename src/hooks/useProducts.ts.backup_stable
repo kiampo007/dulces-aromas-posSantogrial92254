@@ -226,7 +226,7 @@ export function getStockStatus(product: Product): { label: string; color: string
 }
 
 export function formatPrice(value: number): string {
-  return `$ ${value.toLocaleString('es-CL')}`;
+  return `$ ${value.toLocaleString('es-CO')}`;
 }
 
 export function getCategoryColor(category: Category): string {
@@ -247,4 +247,3 @@ export function getCategoryLabel(category: Category): string {
     case 'unisex': return 'Unisex';
   }
 }
-

@@ -169,7 +169,7 @@ const quickActions = [
   { label: 'Deudas', icon: BarChart3, color: 'text-[#F59E0B]', route: '/deudas' },
   { label: 'Pedidos', icon: ClipboardList, color: 'text-[#EF4444]', action: 'view-pedidos' },
   { label: 'IA Buscar', icon: Sparkles, color: 'text-[#9C27B0]', route: '/busqueda' },
-  { label: 'Redes', icon: Instagram, color: 'text-[#00BCD4]', external: 'https://kiampo007.github.io/dulces-aromas-posSantogrial92254/#/tienda' },
+  { label: 'Redes', icon: Instagram, color: 'text-[#00BCD4]', external: 'https://instagram.com' },
   { label: 'QR Tienda', icon: QrCode, color: 'text-[#00BCD4]', action: 'qr-tienda' },
   { label: 'Modo Oscuro', icon: Moon, color: 'text-gray-500', toggle: 'theme' },
 ];
@@ -1006,4 +1006,3 @@ export default function Dashboard() {
     </div>
   );
 }
-

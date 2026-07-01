@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useProducts } from './useProducts';
+﻿import { useState, useEffect, useCallback } from 'react';
 
 export interface SaleItem {
   productId: string;
@@ -37,7 +36,6 @@ function saveSales(sales: Sale[]) {
 }
 
 export function useSales() {
-  const { adjustStock } = useProducts();
   const [sales, setSales] = useState<Sale[]>(loadSales);
 
   useEffect(() => {
@@ -45,11 +43,6 @@ export function useSales() {
   }, [sales]);
 
   const addSale = useCallback((sale: Omit<Sale, 'id' | 'createdAt'>) => {
-    // Reducir stock de cada producto vendido
-    sale.items.forEach((item) => {
-      adjustStock(item.productId, -item.quantity);
-    });
-    
     const newSale: Sale = {
       ...sale,
       id: String(Date.now()),
@@ -57,7 +50,7 @@ export function useSales() {
     };
     setSales(prev => [newSale, ...prev]);
     return newSale;
-  }, [adjustStock]);
+  }, []);
 
   const getTodaySales = useCallback(() => {
     const today = new Date().toISOString().split('T')[0];
