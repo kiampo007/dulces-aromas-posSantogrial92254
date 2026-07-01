@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+﻿import { Routes, Route } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import AuthPage from '@/pages/AuthPage';
 import Dashboard from '@/pages/Dashboard';
@@ -8,6 +8,7 @@ import DeudasPage from '@/pages/DeudasPage';
 import ReportesPage from '@/pages/ReportesPage';
 import BusquedaPage from '@/pages/BusquedaPage';
 import ConfiguracionPage from '@/pages/ConfiguracionPage';
+import DiagnosticoPage from '@/pages/DiagnosticoPage';
 import TiendaPage from '@/pages/TiendaPage';
 
 export default function App() {
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/busqueda" element={<BusquedaPage />} />
         <Route path="/configuracion" element={<ConfiguracionPage />} />
         <Route path="/mas" element={<ConfiguracionPage />} />
+        <Route path="/diagnostico" element={<DiagnosticoPage />} />
       </Route>
     </Routes>
   );
