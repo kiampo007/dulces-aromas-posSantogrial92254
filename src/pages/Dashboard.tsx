@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion';
 import {
@@ -18,7 +19,7 @@ import { usePedidos } from '@/hooks/usePedidos';
 import type { Pedido } from '@/hooks/usePedidos';
 import { cn } from '@/lib/utils';
 
-/* ───────────────────── animation constants ───────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ animation constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const easeOut = [0.25, 0.46, 0.45, 0.94] as [number, number, number, number];
 const spring = { type: 'spring' as const, stiffness: 300, damping: 24 };
 
@@ -30,7 +31,7 @@ const fadeUp = {
   }),
 };
 
-/* ───────────────────── AnimatedNumber ───────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ AnimatedNumber â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function AnimatedNumber({ value, prefix = '', suffix = '', duration = 0.6 }: {
   value: number; prefix?: string; suffix?: string; duration?: number;
 }) {
@@ -51,7 +52,7 @@ function AnimatedNumber({ value, prefix = '', suffix = '', duration = 0.6 }: {
   return <span>{prefix}{display.toLocaleString('es-ES').replace(/,/g, '.')}{suffix}</span>;
 }
 
-/* ───────────────────── Section wrapper ───────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Section wrapper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function Section({ children, className, delay = 0 }: {
   children: ReactNode; className?: string; delay?: number;
 }) {
@@ -67,7 +68,7 @@ function Section({ children, className, delay = 0 }: {
   );
 }
 
-/* ═══════════════════ 1. WELCOME BANNER ═══════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• 1. WELCOME BANNER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function WelcomeBanner() {
   const now = new Date();
   const opts: Intl.DateTimeFormatOptions = { weekday: 'short', day: 'numeric', month: 'short' };
@@ -80,7 +81,7 @@ function WelcomeBanner() {
       >
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-2xl">👋</span>
+            <span className="text-2xl">ðŸ‘‹</span>
             <h1 className="font-sans text-2xl font-semibold text-gray-800 dark:text-gray-100">
               Hola!
             </h1>
@@ -97,7 +98,7 @@ function WelcomeBanner() {
   );
 }
 
-/* ═══════════════════ 2. KPI GRID ═══════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• 2. KPI GRID â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 const kpiConfig = [
   { key: 'ventasHoy' as const, label: 'VENTAS HOY', icon: DollarSign, color: '#00BCD4', colorClass: 'bg-[#00BCD4]/10 text-[#00BCD4]', borderColor: 'border-l-[#00BCD4]' },
   { key: 'inventario' as const, label: 'INVENTARIO', icon: Package, color: '#4CAF50', colorClass: 'bg-[#4CAF50]/10 text-[#4CAF50]', borderColor: 'border-l-[#4CAF50]' },
@@ -162,7 +163,7 @@ function KPIGrid({ kpi }: { kpi: DashboardData['kpi'] }) {
   );
 }
 
-/* ═══════════════════ 3. QUICK ACTIONS ═══════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• 3. QUICK ACTIONS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 const quickActions = [
   { label: 'Nueva Venta', icon: DollarSign, color: 'text-[#FFC107]', route: '/venta' },
   { label: 'Catalogo', icon: LayoutGrid, color: 'text-[#00BCD4]', route: '/catalogo' },
@@ -176,9 +177,7 @@ const quickActions = [
 
 function QuickActions({ onQRAction, onPedidosAction }: { onQRAction: () => void; onPedidosAction: () => void }) {
   const { isDark, toggle } = useDarkMode();
-  const navigate = useCallback((route: string) => {
-    window.location.href = route;
-  }, []);
+const navigate = useNavigate();
 
   return (
     <Section delay={0.5}>
@@ -226,7 +225,7 @@ function QuickActions({ onQRAction, onPedidosAction }: { onQRAction: () => void;
   );
 }
 
-/* ═══════════════════ 4. STOCK ALERTS ═══════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• 4. STOCK ALERTS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function StockBadge({ stock }: { stock: number }) {
   if (stock === 0) return <span className="px-2.5 py-1 rounded-full text-xs bg-[#EF4444]/15 text-[#EF4444] font-medium">0</span>;
   if (stock <= 5) return <span className="px-2.5 py-1 rounded-full text-xs bg-[#F59E0B]/15 text-[#F59E0B] font-medium">{stock}</span>;
@@ -295,7 +294,7 @@ function StockAlerts({ items, onUpdate }: { items: StockItem[]; onUpdate: (id: s
   );
 }
 
-/* ═══════════════════ 5. RECORDATORIOS ═══════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• 5. RECORDATORIOS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Recordatorios({ reminders }: { reminders: DashboardData['reminders'] }) {
   const [expanded, setExpanded] = useState(false);
   const totalAlerts = reminders.stockBajo.length + reminders.agotados.length;
@@ -384,7 +383,7 @@ function Recordatorios({ reminders }: { reminders: DashboardData['reminders'] })
   );
 }
 
-/* ═══════════════════ 6. META DEL MES ═══════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• 6. META DEL MES â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function MetaDelMes({ goal }: { goal: DashboardData['monthlyGoal'] }) {
   const progress = goal.target > 0 ? (goal.current / goal.target) * 100 : 0;
   const remaining = Math.max(0, goal.target - goal.current);
@@ -446,7 +445,7 @@ function MetaDelMes({ goal }: { goal: DashboardData['monthlyGoal'] }) {
   );
 }
 
-/* ═══════════════════ 7. RENTABILIDAD ═══════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• 7. RENTABILIDAD â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 const rentaTabs = ['Por Margen %', 'Por Ganancia $', 'Por Ventas'] as const;
 type RentaTab = typeof rentaTabs[number];
 
@@ -577,7 +576,7 @@ function Rentabilidad({ data }: { data: DashboardData['profitability'] }) {
   );
 }
 
-/* ═══════════════════ 8. LOGROS ═══════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• 8. LOGROS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 const achievementLabels: Record<string, string> = {
   'Inventario': 'Inventario',
   'Primera Venta': 'Primera Venta',
@@ -652,7 +651,7 @@ function Logros({ achievements }: { achievements: Achievement[] }) {
   );
 }
 
-/* ═══════════════════ 9. ESTADISTICAS ═══════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• 9. ESTADISTICAS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 const chartTooltipStyle = {
   backgroundColor: 'rgba(26, 26, 46, 0.95)',
   border: '1px solid rgba(255,255,255,0.1)',
@@ -738,7 +737,7 @@ function Estadisticas({ stats }: { stats: DashboardData['weeklyStats'] }) {
             <p className="text-sm text-gray-600 dark:text-gray-400">
               {stats.reduce((best, s) => s.amount > best.amount ? s : best, stats[0])?.amount > 0
                 ? stats.reduce((best, s) => s.amount > best.amount ? s : best, stats[0]).short
-                : '—'}
+                : 'â€”'}
             </p>
           </div>
         </div>
@@ -747,7 +746,7 @@ function Estadisticas({ stats }: { stats: DashboardData['weeklyStats'] }) {
   );
 }
 
-/* ═══════════════════ 10. BOUTIQUE SUMMARY ═══════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• 10. BOUTIQUE SUMMARY â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function BoutiqueSummary({ summary }: { summary: DashboardData['boutiqueSummary'] }) {
   const items = [
     { label: 'Productos', value: summary.productos, icon: Package, color: 'text-[#4CAF50]' },
@@ -784,7 +783,7 @@ function BoutiqueSummary({ summary }: { summary: DashboardData['boutiqueSummary'
   );
 }
 
-/* ═══════════════════ 11. TENDENCIAS MUNDIAL ═══════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• 11. TENDENCIAS MUNDIAL â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 const trendTabs = [
   { key: 'dama' as const, label: 'Dama', count: 14 },
   { key: 'caballero' as const, label: 'Caballero', count: 14 },
@@ -864,7 +863,7 @@ function TendenciasMundial({ trends }: { trends: DashboardData['trends'] }) {
                     {item.name}
                   </p>
                 </div>
-                <span className="text-xs text-gray-400 flex-shrink-0">—</span>
+                <span className="text-xs text-gray-400 flex-shrink-0">â€”</span>
                 <span className="text-xs text-gray-400 flex-shrink-0">{item.brand}</span>
               </motion.div>
             ))}
@@ -880,7 +879,7 @@ function TendenciasMundial({ trends }: { trends: DashboardData['trends'] }) {
   );
 }
 
-/* ═══════════════════ PEDIDOS MODAL ═══════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• PEDIDOS MODAL â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function PedidosModal({ open, onClose, pedidos }: { open: boolean; onClose: () => void; pedidos: Pedido[] }) {
   if (!open) return null;
   const pendientes = pedidos.filter(p => p.estado === 'pendiente');
@@ -958,7 +957,7 @@ function PedidosModal({ open, onClose, pedidos }: { open: boolean; onClose: () =
   );
 }
 
-/* ═══════════════════ STORE QR MODAL ═══════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• STORE QR MODAL â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function StoreQRModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   if (!open) return null;
   return (
@@ -975,7 +974,7 @@ function StoreQRModal({ open, onClose }: { open: boolean; onClose: () => void })
   );
 }
 
-/* ═══════════════════ MAIN DASHBOARD ═══════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MAIN DASHBOARD â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 export default function Dashboard() {
   const { data } = useDashboardData();
   const { pedidos } = usePedidos();
@@ -1006,4 +1005,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
