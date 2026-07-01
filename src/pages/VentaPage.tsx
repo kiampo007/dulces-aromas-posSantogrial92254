@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useProducts } from '@/hooks/useProducts';
 import { useSales } from '@/hooks/useSales';
+import { useCuotas } from '@/hooks/useCuotas';
 
 /* ─── Types ─── */
 interface Product {
@@ -291,6 +292,7 @@ export default function VentaPage() {
   }, [cart, paymentMethod, clientName]);
 
   const { addSale } = useSales();
+  const { crearCredito } = useCuotas();
 
   const confirmSale = useCallback(() => {
     setIsProcessing(true);
@@ -331,6 +333,15 @@ export default function VentaPage() {
           payments: [],
         });
         localStorage.setItem('dulces_aromas_debts', JSON.stringify(debts));
+
+        /* Create credit with quotas */
+        crearCredito({
+          cliente: clientName.trim(),
+          telefono: clientPhone?.trim() || undefined,
+          montoTotal: total,
+          numeroCuotas: 3,
+          ventaId: savedSale.id,
+        });
       }
 
       /* Update stock via hook */
@@ -1475,3 +1486,6 @@ function ModalOverlay({
     </motion.div>
   );
 }
+
+
+

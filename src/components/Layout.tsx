@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom';
+import SalesBot from '@/components/SalesBot';
 import Navbar from './Navbar';
 
 export default function Layout() {
@@ -13,6 +14,8 @@ export default function Layout() {
           <Outlet />
         </div>
       </main>
+
+      <SalesBot />
     </div>
   );
 }
