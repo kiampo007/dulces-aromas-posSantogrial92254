@@ -190,7 +190,7 @@ export default function DiagnosticoPage() {
             <p className="text-sm text-gray-500 mt-1">Inteligencia de negocio y comparativas históricas</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => exportToExcel({ metricas: metrics })} disabled={running}><FileSpreadsheet className="w-4 h-4 mr-1" /> Excel</Button>
+            <Button variant="outline" size="sm" onClick={() => exportToExcel({ metricas: metrics })} disabled={running}><FileSpreadsheet className="w-4 h-4 mr-1" /> CSV</Button>
             <Button variant="outline" size="sm" onClick={exportReport} disabled={running}><Download className="w-4 h-4 mr-1" /> JSON</Button>
             <Button variant="outline" size="sm" onClick={executeDiagnostics} disabled={running}><RefreshCw className={cn("w-4 h-4 mr-1", running && "animate-spin")} />{running ? 'Analizando...' : 'Re-ejecutar'}</Button>
             <Button variant="outline" size="sm" onClick={() => navigate('/')}><ArrowLeft className="w-4 h-4 mr-1" /> Volver</Button>
@@ -259,3 +259,4 @@ export default function DiagnosticoPage() {
     </div>
   );
 }
+

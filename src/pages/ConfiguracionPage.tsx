@@ -25,7 +25,7 @@ interface Deuda { id: string; cliente: string; monto: number; pagado: number; sa
 
 /* â”€â”€â”€ Formatters â”€â”€â”€ */
 function fmtMoney(value: number): string {
-  return `$ ${value.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+  return `$ ${value.toLocaleString('es-CL', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
 /* â”€â”€â”€ PIN Hash Function â”€â”€â”€ */
@@ -1255,3 +1255,4 @@ function InformacionSection() {
     </motion.div>
   );
 }
+

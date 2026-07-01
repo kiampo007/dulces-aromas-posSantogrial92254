@@ -42,7 +42,7 @@ interface CartItem extends Product {
 
 
 /* â”€â”€â”€ Constants â”€â”€â”€ */
-const CATEGORIES = ['Todos', 'Caballero', 'Dama', 'NiÃ±os', 'Unisex'] as const;
+const CATEGORIES = ['Todos', 'Caballero', 'Dama', 'Niños', 'Unisex'] as const;
 type Category = (typeof CATEGORIES)[number];
 
 const PAYMENT_METHODS = [
@@ -182,7 +182,7 @@ export default function VentaPage() {
       const matchCat =
         activeCategory === 'Todos'
           ? true
-          : activeCategory === 'NiÃ±os'
+          : activeCategory === 'Niños'
             ? p.category === 'ninos'
             : p.category === activeCategory.toLowerCase();
       const q = search.toLowerCase();
@@ -326,7 +326,7 @@ export default function VentaPage() {
           totalAmount: total,
           paidAmount: 0,
           remaining: total,
-          status: 'activa',
+          status: 'active',
           saleId: savedSale.id,
           createdAt: savedSale.createdAt,
           dueDate: dueDate || new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
@@ -1486,6 +1486,7 @@ function ModalOverlay({
     </motion.div>
   );
 }
+
 
 
 
