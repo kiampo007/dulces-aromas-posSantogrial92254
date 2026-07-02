@@ -14,14 +14,12 @@ interface Cuota {
   estado: "activa" | "atrasada" | "completada";
 }
 
-export function CuotasPage() {
+export default function CuotasPage() {
   const [cuotas, setCuotas] = useState<Cuota[]>(() => {
     const guardado = localStorage.getItem("dulces_aromas_cuotas");
     return guardado ? JSON.parse(guardado) : [];
   });
-  const [form, setForm] = useState({
-    cliente: "", telefono: "", producto: "", montoTotal: "", cuotas: "3"
-  });
+  const [form, setForm] = useState({ cliente: "", telefono: "", producto: "", montoTotal: "", cuotas: "3" });
   const [mostrarForm, setMostrarForm] = useState(false);
 
   useEffect(() => {
@@ -32,11 +30,9 @@ export function CuotasPage() {
     const monto = parseInt(form.montoTotal);
     const numCuotas = parseInt(form.cuotas);
     if (!form.cliente || !monto || !numCuotas) return;
-
     const cuotaMensual = Math.round(monto / numCuotas);
     const hoy = new Date();
     const proximo = new Date(hoy.getFullYear(), hoy.getMonth() + 1, hoy.getDate());
-    
     const nueva: Cuota = {
       id: Date.now().toString(),
       cliente: form.cliente,
@@ -49,7 +45,6 @@ export function CuotasPage() {
       proximoPago: proximo.toISOString().split("T")[0],
       estado: "activa"
     };
-
     setCuotas(prev => [...prev, nueva]);
     setForm({ cliente: "", telefono: "", producto: "", montoTotal: "", cuotas: "3" });
     setMostrarForm(false);
@@ -76,7 +71,6 @@ export function CuotasPage() {
 
   const totalPendiente = cuotas.filter(c => c.estado !== "completada").reduce((sum, c) => sum + (c.montoTotal - (c.cuotaMensual * c.pagadas)), 0);
   const totalActivas = cuotas.filter(c => c.estado === "activa").length;
-  const totalAtrasadas = cuotas.filter(c => c.estado === "atrasada").length;
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
@@ -84,16 +78,11 @@ export function CuotasPage() {
         <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
           <CreditCard className="text-teal-600" /> Sistema de Cuotas
         </h1>
-        <button 
-          onClick={() => setMostrarForm(!mostrarForm)}
-          className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700"
-        >
+        <button onClick={() => setMostrarForm(!mostrarForm)} className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700">
           {mostrarForm ? "Cancelar" : "Nueva Cuota"}
         </button>
       </div>
-
-      {/* Resumen */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="bg-white p-4 rounded-xl shadow">
           <p className="text-sm text-slate-500">Total Pendiente</p>
           <p className="text-2xl font-bold text-teal-600">${totalPendiente.toLocaleString()}</p>
@@ -102,13 +91,7 @@ export function CuotasPage() {
           <p className="text-sm text-slate-500">Cuotas Activas</p>
           <p className="text-2xl font-bold text-blue-600">{totalActivas}</p>
         </div>
-        <div className="bg-white p-4 rounded-xl shadow">
-          <p className="text-sm text-slate-500">Atrasadas</p>
-          <p className="text-2xl font-bold text-red-600">{totalAtrasadas}</p>
-        </div>
       </div>
-
-      {/* Formulario */}
       {mostrarForm && (
         <div className="bg-white p-6 rounded-xl shadow mb-6 space-y-4">
           <h3 className="font-bold text-lg">Nueva Cuota</h3>
@@ -124,26 +107,20 @@ export function CuotasPage() {
           </div>
         </div>
       )}
-
-      {/* Lista */}
       <div className="space-y-3">
         {cuotas.length === 0 && <p className="text-center text-slate-400 py-8">No hay cuotas registradas</p>}
         {cuotas.map(c => (
-          <div key={c.id} className={`bg-white p-4 rounded-xl shadow border-l-4 ${c.estado === "completada" ? "border-green-500" : c.estado === "atrasada" ? "border-red-500" : "border-blue-500"}`}>
+          <div key={c.id} className={`bg-white p-4 rounded-xl shadow border-l-4 ${c.estado === "completada" ? "border-green-500" : "border-blue-500"}`}>
             <div className="flex justify-between items-start">
               <div>
                 <h4 className="font-bold text-lg">{c.cliente}</h4>
                 <p className="text-sm text-slate-500">{c.producto} • {c.telefono}</p>
                 <div className="flex gap-4 mt-2 text-sm">
                   <span className="flex items-center gap-1"><DollarSign size={14} /> ${c.montoTotal.toLocaleString()}</span>
-                  <span className="flex items-center gap-1"><Calendar size={14} /> {c.pagadas}/{c.cuotas} pagadas</span>
+                  <span className="flex items-center gap-1"><Calendar size={14} /> {c.pagadas}/{c.cuotas}</span>
                   <span className="flex items-center gap-1"><CreditCard size={14} /> ${c.cuotaMensual.toLocaleString()}/mes</span>
                 </div>
-                {c.proximoPago && (
-                  <p className="text-sm mt-1 flex items-center gap-1 text-orange-600">
-                    <AlertCircle size={14} /> Próximo pago: {c.proximoPago}
-                  </p>
-                )}
+                {c.proximoPago && <p className="text-sm mt-1 text-orange-600"><AlertCircle size={14} /> Próximo: {c.proximoPago}</p>}
               </div>
               <div className="flex gap-2">
                 {c.estado !== "completada" && (

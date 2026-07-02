@@ -15,16 +15,20 @@ export function useProductos() {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    fetch("/productos.json")
-      .then(r => r.json())
-      .then(data => {
-        setProductos(data);
-        setCargando(false);
-      })
-      .catch(() => {
-        setProductos([]);
-        setCargando(false);
-      });
+    const guardados = localStorage.getItem("dulces_aromas_productos");
+    if (guardados) {
+      setProductos(JSON.parse(guardados));
+      setCargando(false);
+    } else {
+      fetch("/productos.json")
+        .then(r => r.json())
+        .then(data => {
+          setProductos(data);
+          localStorage.setItem("dulces_aromas_productos", JSON.stringify(data));
+          setCargando(false);
+        })
+        .catch(() => setCargando(false));
+    }
   }, []);
 
   return { productos, cargando };

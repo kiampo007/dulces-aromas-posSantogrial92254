@@ -9,6 +9,8 @@ import ReportesPage from '@/pages/ReportesPage';
 import BusquedaPage from '@/pages/BusquedaPage';
 import ConfiguracionPage from '@/pages/ConfiguracionPage';
 import DiagnosticoPage from '@/pages/DiagnosticoPage';
+import BotVentasPage from '@/pages/BotVentasPage';
+import CuotasPage from '@/pages/CuotasPage';
 import TiendaPage from '@/pages/TiendaPage';
 
 export default function App() {
@@ -29,10 +31,13 @@ export default function App() {
         <Route path="/reportes" element={<ReportesPage />} />
         <Route path="/busqueda" element={<BusquedaPage />} />
         <Route path="/configuracion" element={<ConfiguracionPage />} />
+        <Route path="/bot" element={<BotVentasPage />} />
+        <Route path="/cuotas" element={<CuotasPage />} />
         <Route path="/mas" element={<ConfiguracionPage />} />
         <Route path="/diagnostico" element={<DiagnosticoPage />} />
       </Route>
     </Routes>
   );
 }
+
 
